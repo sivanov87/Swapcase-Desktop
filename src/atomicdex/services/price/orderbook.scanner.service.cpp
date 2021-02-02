@@ -33,5 +33,31 @@ namespace atomic_dex
     void
     orderbook_scanner_service::update() noexcept
     {
+        /**
+         * TODO:
+         * - API best_orders []
+         * - Property QVariantMap with Coin, Best Fiat Price and CEX Rates inside []
+         * - Property fetching busy in orderbook_scanner_widget to spin
+         * - orderbook_scanner_widget class that will get value from this service []
+         * - emit event here when the update is finished so we can update data in frontend []
+         *
+         * Workflow (Advanced view) :
+         *
+         * Clear when switching between Buy / Sell
+         * Clear when changing coin
+         * Spin when changing volume (force an update)
+         *
+         * Workflow (Simple view) :
+         *
+         * Spin when changing volume of the desired coin to buy/sell
+         * Don't spin when changing coin until we change the volume
+         *
+         * Requirements for the widget:
+         *
+         * - Should have a message when volume is 0 or empty (please enter a valid volume to find best offers)
+         * - If there is no best offers for the coin show a message
+         * - Spinner when fetching is busy
+         * - Fetch best price every 30seconds or if we click on the reload button
+         */
     }
 } // namespace atomic_dex
