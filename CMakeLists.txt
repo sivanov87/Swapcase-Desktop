@@ -243,6 +243,7 @@ target_sources(atomicdex-desktop_shared_deps PRIVATE
         ##! Services
         ${CMAKE_SOURCE_DIR}/src/atomicdex/services/exporter/exporter.service.cpp
         ${CMAKE_SOURCE_DIR}/src/atomicdex/services/price/global.provider.cpp
+        ${CMAKE_SOURCE_DIR}/src/atomicdex/services/price/orderbook.scanner.service.cpp
         ${CMAKE_SOURCE_DIR}/src/atomicdex/services/price/coinpaprika/coinpaprika.provider.cpp
         ${CMAKE_SOURCE_DIR}/src/atomicdex/services/price/oracle/band.provider.cpp
         ${CMAKE_SOURCE_DIR}/src/atomicdex/services/update/update.checker.service.cpp

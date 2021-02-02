@@ -29,6 +29,7 @@
 #include "atomicdex/events/qt.events.hpp"
 #include "atomicdex/models/qt.candlestick.charts.model.hpp"
 #include "atomicdex/models/qt.portfolio.model.hpp"
+#include "atomicdex/services/price/orderbook.scanner.service.hpp"
 #include "atomicdex/widgets/dex/qt.market.pairs.hpp"
 #include "atomicdex/widgets/dex/qt.orderbook.hpp"
 
@@ -41,6 +42,7 @@ namespace atomic_dex
         Q_OBJECT
 
         //! Q Properties definitions
+        Q_PROPERTY(orderbook_scanner_service* orderbook_scanner_service READ get_orderbook_scanner_service NOTIFY orderbookScannerServiceChanged)
         Q_PROPERTY(qt_orderbook_wrapper* orderbook READ get_orderbook_wrapper NOTIFY orderbookChanged)
         Q_PROPERTY(market_pairs* market_pairs_mdl READ get_market_pairs_mdl NOTIFY marketPairsChanged)
         Q_PROPERTY(QVariant buy_sell_last_rpc_data READ get_buy_sell_last_rpc_data WRITE set_buy_sell_last_rpc_data NOTIFY buySellLastRpcDataChanged)
@@ -169,10 +171,11 @@ namespace atomic_dex
         Q_INVOKABLE void place_multiple_sell_order() noexcept;                  ///< multi ticker (when confirming a multi order)
 
         //! Properties
-        [[nodiscard]] qt_orderbook_wrapper* get_orderbook_wrapper() const noexcept;
-        [[nodiscard]] market_pairs*         get_market_pairs_mdl() const noexcept;
-        [[nodiscard]] bool                  is_buy_sell_rpc_busy() const noexcept;
-        void                                set_buy_sell_rpc_busy(bool status) noexcept;
+        [[nodiscard]] orderbook_scanner_service* get_orderbook_scanner_service() const noexcept;
+        [[nodiscard]] qt_orderbook_wrapper*     get_orderbook_wrapper() const noexcept;
+        [[nodiscard]] market_pairs*             get_market_pairs_mdl() const noexcept;
+        [[nodiscard]] bool                      is_buy_sell_rpc_busy() const noexcept;
+        void                                    set_buy_sell_rpc_busy(bool status) noexcept;
 
         //! Trading Logic
         [[nodiscard]] MarketMode   get_market_mode() const noexcept;
@@ -225,6 +228,7 @@ namespace atomic_dex
         void buySellLastRpcDataChanged();
         void buySellRpcStatusChanged();
         void multiTickerFeesStatusChanged();
+        void orderbookScannerServiceChanged();
 
         //! Trading logic
         void priceChanged();
