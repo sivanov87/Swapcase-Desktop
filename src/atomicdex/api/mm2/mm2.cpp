@@ -159,6 +159,32 @@ namespace
     }
 } // namespace
 
+//! Implementation RPC [best_orders]
+namespace mm2::api
+{
+    void
+    to_json(nlohmann::json& j, const best_orders_request& req)
+    {
+        j["coin"]   = req.coin;
+        j["action"] = req.action;
+        j["volume"] = req.volume;
+    }
+
+    void
+    from_json(const nlohmann::json& j, best_order_infos& answer)
+    {
+        j.at("volume").get_to(answer.volume);
+        j.at("price").get_to(answer.price);
+        j.at("order_uuid").get_to(answer.order_uuid);
+    }
+
+    void
+    from_json(const nlohmann::json& j, best_orders_answer& answer)
+    {
+        j.get_to(answer.result);
+    }
+} // namespace mm2::api
+
 //! Implementation RPC [max_taker_vol]
 namespace mm2::api
 {

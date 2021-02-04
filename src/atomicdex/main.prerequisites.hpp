@@ -324,7 +324,7 @@ run_app(int argc, char** argv)
     // Load Qaterial.
 
     qaterial::loadQmlResources(false);
-    // qaterial::registerQmlTypes("Qaterial", 1, 0);
+    // qaterial::registerQmlTypes("Qaterial", 1, 0); not working on linux - qaterial crash
     engine.addImportPath("qrc:/atomic_defi_design/imports");
     engine.addImportPath("qrc:/atomic_defi_design/Constants");
     qmlRegisterSingletonType(QUrl("qrc:/atomic_defi_design/qml/Constants/General.qml"), "App", 1, 0, "General");

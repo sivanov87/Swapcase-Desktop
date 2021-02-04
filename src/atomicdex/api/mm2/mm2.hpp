@@ -46,6 +46,33 @@ namespace mm2::api
 
     std::string rpc_version();
 
+    struct best_orders_request
+    {
+        std::string coin;
+        std::string volume;
+        std::string action;
+    };
+
+    void to_json(nlohmann::json &j, const best_orders_request& req);
+
+    struct best_order_infos
+    {
+        std::string price;
+        std::string volume;
+        std::string order_uuid;
+    };
+
+    void from_json(const nlohmann::json &j, best_order_infos& answer);
+
+    struct best_orders_answer
+    {
+        std::unordered_map<std::string, best_order_infos> result;
+        std::string                                       raw_result;      ///< internal
+        int                                               rpc_result_code; ///< internal
+    };
+
+    void from_json(const nlohmann::json& j, best_orders_answer& answer);
+
     //! max taker vol
     struct max_taker_vol_request
     {
