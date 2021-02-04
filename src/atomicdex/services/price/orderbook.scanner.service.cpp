@@ -35,7 +35,7 @@ namespace atomic_dex
     {
         /**
          * TODO:
-         * - API best_orders []
+         * - API best_orders [x]
          * - Property QVariantMap with Coin, Best Fiat Price and CEX Rates inside []
          * - Property fetching busy in orderbook_scanner_widget to spin
          * - orderbook_scanner_widget class that will get value from this service []

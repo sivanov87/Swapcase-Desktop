@@ -1375,6 +1375,7 @@ namespace mm2::api
     template mm2::api::my_recent_swaps_answer rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) noexcept;
     template mm2::api::active_swaps_answer    rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) noexcept;
     template mm2::api::show_priv_key_answer   rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) noexcept;
+    template mm2::api::best_orders_answer     rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) noexcept;
 
     template <typename RpcReturnType>
     RpcReturnType
