@@ -46,7 +46,7 @@ namespace atomic_dex
     t_password_key
     derive_password(const std::string& password, std::error_code& ec)
     {
-        SPDLOG_DEBUG("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
+        SPDLOG_DEBUG("derive_password");
         t_salt_array   salt{};
         t_password_key generated_crypto_key{};
 
@@ -67,7 +67,7 @@ namespace atomic_dex
     void
     encrypt(const fs::path& target_path, const char* mnemonic, const unsigned char* key)
     {
-        SPDLOG_DEBUG("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
+        SPDLOG_DEBUG("encrypt");
 
         std::array<unsigned char, g_chunk_size>     buf_in{};
         std::array<unsigned char, g_buff_len>       buf_out{};
