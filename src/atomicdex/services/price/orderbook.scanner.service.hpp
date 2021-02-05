@@ -22,13 +22,46 @@
 //! Deps
 #include <antara/gaming/ecs/system.manager.hpp> ///< ecs
 
+//! Project
+#include "atomicdex/api/mm2/mm2.hpp" ///< t_best_orders_request
+
 namespace atomic_dex
 {
     class orderbook_scanner_service final : public QObject, public ag::ecs::pre_update_system<orderbook_scanner_service>
     {
         Q_OBJECT
 
+        //! Properties
+
+        /**
+         * @eg:
+         * {
+         *      "coin": "KMD",
+         *      "best_fiat_price": 0.64,
+         *      "current_fiat": "$",
+         *      "cex_rates": "-1.31"
+         * }
+         *
+         */
+        Q_PROPERTY(QVariant best_orders_infos READ get_best_orders_infos NOTIFY bestOrdersInfosChanged)
+        Q_PROPERTY(bool best_orders_busy READ is_best_orders_busy WRITE set_best_orders_busy NOTIFY bestOrdersBusyChanged)
+
+        using t_update_time_point = std::chrono::high_resolution_clock::time_point;
+        using t_json_synchronized = boost::synchronized_value<nlohmann::json>;
+
         ag::ecs::system_manager& m_system_manager;
+        std::atomic_bool         m_is_best_orders_busy{false};
+        t_json_synchronized      m_best_orders_infos;
+        t_update_time_point      m_update_clock;
+        t_best_orders_request    m_current_req; ///< current best orders request - change only if process_best_orders is called
+
+        //! Private member functions
+        void process_best_orders();
+
+      signals:
+        //! Best orders signals
+        void bestOrdersBusyChanged();
+        void bestOrdersInfosChanged();
 
       public:
         //! Constructor
@@ -40,7 +73,13 @@ namespace atomic_dex
         //! Public override
         void update() noexcept final;
 
-        //! QML API
+        //! Public API
+        void change_best_orders(t_best_orders_request req);
+
+        //! Properties
+        void                   set_best_orders_busy(bool status) noexcept;
+        [[nodiscard]] bool     is_best_orders_busy() const noexcept;
+        [[nodiscard]] QVariant get_best_orders_infos() const noexcept;
     };
 } // namespace atomic_dex
 

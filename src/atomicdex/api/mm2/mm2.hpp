@@ -53,7 +53,7 @@ namespace mm2::api
         std::string action;
     };
 
-    void to_json(nlohmann::json &j, const best_orders_request& req);
+    void to_json(nlohmann::json& j, const best_orders_request& req);
 
     struct best_order_infos
     {
@@ -62,7 +62,7 @@ namespace mm2::api
         std::string order_uuid;
     };
 
-    void from_json(const nlohmann::json &j, best_order_infos& answer);
+    void from_json(const nlohmann::json& j, best_order_infos& answer);
 
     struct best_orders_answer
     {
@@ -770,4 +770,6 @@ namespace atomic_dex
     // using t_my_order_contents       = ::mm2::api::my_order_contents;
     using t_get_trade_fee_request = ::mm2::api::trade_fee_request;
     using t_get_trade_fee_answer  = ::mm2::api::trade_fee_answer;
+    using t_best_orders_request   = ::mm2::api::best_orders_request;
+    using t_best_orders_answer    = ::mm2::api::best_orders_answer;
 } // namespace atomic_dex
