@@ -56,7 +56,7 @@
 #include "atomicdex/models/qt.portfolio.model.hpp"
 #include "atomicdex/utilities/kill.hpp"
 #include "atomicdex/utilities/qt.utilities.hpp"
-
+#include "atomicdex/utilities/log.prerequisites.hpp"
 #ifdef __APPLE__
 #    include "atomicdex/platform/osx/manager.hpp"
 #    include <sys/sysctl.h>

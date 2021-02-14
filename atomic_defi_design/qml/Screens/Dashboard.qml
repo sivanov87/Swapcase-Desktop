@@ -31,6 +31,7 @@ Item {
     readonly property int idx_exchange_trade: 0
     readonly property int idx_exchange_orders: 1
     readonly property int idx_exchange_history: 2
+    readonly property int idx_exchange_trade_v2: 3
 
     property alias notifications_modal: notifications_modal
     Layout.fillWidth: true
