@@ -18,6 +18,7 @@ Item {
     property bool verticalShadow: false
     property bool opacity_mask_enabled: false
     property bool auto_set_size: true
+    property bool showShadow: true
 
     readonly property var visible_rect: opacity_mask_enabled ? mask_loader : rect
 
@@ -76,6 +77,7 @@ Item {
         spread: 0
         color: verticalShadow ? Style.colorDropShadowLight2 : Style.colorDropShadowLight
         smooth: true
+        visible: showShadow
         z: -2
     }
 
@@ -90,6 +92,7 @@ Item {
         spread: 0
         color: Style.colorDropShadowDark
         smooth: true
+        visible: showShadow
         z: -2
     }
 }
