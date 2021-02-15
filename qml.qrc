@@ -375,5 +375,7 @@
         <file>atomic_defi_design/assets/images/coins/wsb.png</file>
         <file>atomic_defi_design/assets/images/coins/zat.png</file>
         <file>atomic_defi_design/qml/Exchange/Trade/TradeV2.qml</file>
+        <file>atomic_defi_design/qml/Components/TradePanel.qml</file>
+        <file>atomic_defi_design/assets/images/exchange-exchange2.svg</file>
     </qresource>
 </RCC>

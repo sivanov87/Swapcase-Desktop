@@ -59,6 +59,7 @@ Item {
             Layout.fillWidth: true
             Layout.topMargin: layout_margin
             Layout.rightMargin: layout_margin
+            //visible: false
 
             content: Item {
                 id: content
