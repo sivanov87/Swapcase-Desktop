@@ -5,7 +5,6 @@ import QtGraphicalEffects 1.0
 
 import AtomicDEX.MarketMode 1.0
 import Qaterial 1.0 as Qaterial
-import SortFilterProxyModel 1.0
 
 import "../../Components"
 import "../../Constants"
@@ -63,20 +62,10 @@ Item {
         id: _model
     }
 
-    SortFilterProxyModel {
-        id: _model_test
-        sourceModel:_model
-        filters: RegExpFilter {
-            roleName: "display"
-            pattern: tickerSearchField.text
-            caseSensitivity: Qt.CaseInsensitive
-        }
-    }
-
 
     Qaterial.Popup {
         id: selector_box
-        width:  400
+        width:  500
         height: _popup_column.height+20
         x: 20
         y: 70
@@ -96,7 +85,7 @@ Item {
                     color: Qaterial.Colors.white
 
                     onTextChanged: {
-                        //ticker_view.model.setFilterFixedString(text)
+                        ticker_view.model.setFilterFixedString(text)
                     }
                     Qaterial.AppBarButton {
                         anchors.verticalCenter: parent.verticalCenter
@@ -109,11 +98,11 @@ Item {
 
             Item {
                 width: parent.width
-                height: (ticker_view.count*50)+10
+                height: (ticker_view.count*50)+10> 400 ? 400 : (ticker_view.count*50)+10
                 ListView {
                     id: ticker_view
                     anchors.fill: parent
-                    model: _model_test//exchange_trade.isSelected? API.app.trading_pg.market_pairs_mdl.right_selection_box : API.app.trading_pg.market_pairs_mdl.left_selection_box
+                    model: API.app.trading_pg.market_pairs_mdl.unique_selection_box // _model_test//exchange_trade.isSelected? API.app.trading_pg.market_pairs_mdl.right_selection_box : API.app.trading_pg.market_pairs_mdl.left_selection_box
                     clip: true
                     delegate: DefaultMouseArea {
 
@@ -148,12 +137,12 @@ Item {
                                             height: 22
                                             width: 22
                                             anchors.centerIn: parent
-                                            source: General.coinIcon(selected)//"qrc:/atomic_defi_design/assets/images/coins/btc.png"
+                                            source: General.coinIcon(ticker) //"qrc:/atomic_defi_design/assets/images/coins/btc.png"
                                         }
                                         Image {
                                             height: 16
                                             width: 16
-                                            source: General.coinIcon(ticker) //"qrc:/atomic_defi_design/assets/images/coins/dash.png"
+                                            source:  General.coinIcon(selected)//"qrc:/atomic_defi_design/assets/images/coins/dash.png"
                                         }
                                     }
 
@@ -178,7 +167,7 @@ Item {
                                     leftPadding: 10
                                     spacing: 5
                                     DefaultText {
-                                        text: "8.091 DASH"
+                                        text:  selected_balance+" "+selected
                                         font.family: Style.font_family
                                         font.pixelSize: Style.textSizeSmall3
 
@@ -190,7 +179,7 @@ Item {
 
                                     }
                                     DefaultText {
-                                        text: "0.008091 BTC"
+                                        text:balance+" "+ticker
                                         font.family: Style.font_family
                                         font.pixelSize: Style.textSizeSmall3
                                     }
@@ -584,6 +573,8 @@ Item {
                                     }
                                 }
                                 onClicked:  {
+                                   ticker_view.model.setFilterFixedString("")
+                                    tickerSearchField.text = ""
                                     openSelector()
                                 }
                             }
