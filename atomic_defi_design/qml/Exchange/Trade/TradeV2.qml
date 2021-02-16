@@ -5,6 +5,7 @@ import QtGraphicalEffects 1.0
 
 import AtomicDEX.MarketMode 1.0
 import Qaterial 1.0 as Qaterial
+import SortFilterProxyModel 1.0
 
 import "../../Components"
 import "../../Constants"
@@ -43,9 +44,184 @@ Item {
         { "price": 0.008108, "qty": 8.476, "percent_depth": 65, "total": 12.1921, "is_mine":true },
     ]
     property bool isUltraLarge: width>1400
+    property string tickerSelected
+    property bool isSelected: false
+    property var dataList: [
+        {"display": "KMD/BTC", "selected": "KMD", "ticker": "BTC", "selected_balance": 10, "balance": 1},
+        {"display": "KMD/RICK", "selected": "KMD", "ticker": "RICK", "selected_balance": 10, "balance": 1}
+      ]
+    function openSelector() {
+        selector_box.open()
+    }
+    Component.onCompleted: {
+        for(let i=0; i<exchange_trade.dataList.length;i++){
+            let e = dataList[i]
+            _model.append(e)
+        }
+    }
+    ListModel {
+        id: _model
+    }
+
+    SortFilterProxyModel {
+        id: _model_test
+        sourceModel:_model
+        filters: RegExpFilter {
+            roleName: "display"
+            pattern: tickerSearchField.text
+            caseSensitivity: Qt.CaseInsensitive
+        }
+    }
+
+
+    Qaterial.Popup {
+        id: selector_box
+        width:  400
+        height: _popup_column.height+20
+        x: 20
+        y: 70
+        Column {
+            id: _popup_column
+            width: parent.width
+            Item {
+                width: parent.width
+                height: 64
+                DefaultTextField {
+                    id: tickerSearchField
+                    width: parent.width
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 50
+                    font.family: Style.font_family
+                    font.pixelSize: Style.textSize1
+                    color: Qaterial.Colors.white
+
+                    onTextChanged: {
+                        //ticker_view.model.setFilterFixedString(text)
+                    }
+                    Qaterial.AppBarButton {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        anchors.rightMargin: 10
+                        icon.source: "qrc:/atomic_defi_design/assets/images/exchange-exchange2.svg"
+                    }
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: (ticker_view.count*50)+10
+                ListView {
+                    id: ticker_view
+                    anchors.fill: parent
+                    model: _model_test//exchange_trade.isSelected? API.app.trading_pg.market_pairs_mdl.right_selection_box : API.app.trading_pg.market_pairs_mdl.left_selection_box
+                    clip: true
+                    delegate: DefaultMouseArea {
+
+                        width: ticker_view.width
+                        height: 50
+                        hoverEnabled: true
+                        FloatingBackground {
+                            width: parent.width
+                            height: parent.height
+                            color: Qaterial.Colors.pink800
+                            visible: parent.containsMouse
+                            Qaterial.AppBarButton {
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.right: parent.right
+                                anchors.rightMargin: 5
+                                icon.source: "qrc:/atomic_defi_design/assets/images/exchange-exchange2.svg"
+                            }
+                        }
+
+                        RowLayout {
+                            anchors.fill: parent
+                            Item {
+                                Layout.preferredWidth: 140
+                                Layout.fillHeight: true
+                                Row {
+                                    anchors.centerIn: parent
+                                    Item {
+                                        height: 36
+                                        width: 36
+
+                                        Image {
+                                            height: 22
+                                            width: 22
+                                            anchors.centerIn: parent
+                                            source: General.coinIcon(selected)//"qrc:/atomic_defi_design/assets/images/coins/btc.png"
+                                        }
+                                        Image {
+                                            height: 16
+                                            width: 16
+                                            source: General.coinIcon(ticker) //"qrc:/atomic_defi_design/assets/images/coins/dash.png"
+                                        }
+                                    }
+
+                                    spacing: 10
+                                    DefaultText {
+                                        text: selected+" / "+ticker
+                                        font.family: Style.font_family
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        font.pixelSize: 14
+                                        anchors.verticalCenterOffset: -2
+                                    }
+                                }
+                            }
+                            VerticalLine {
+                                Layout.fillHeight: true
+                            }
+                            Item {
+                                Layout.preferredWidth: 100
+                                Layout.fillHeight: true
+                                Row {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    leftPadding: 10
+                                    spacing: 5
+                                    DefaultText {
+                                        text: "8.091 DASH"
+                                        font.family: Style.font_family
+                                        font.pixelSize: Style.textSizeSmall3
+
+                                    }
+                                    DefaultText {
+                                        text: "/"
+                                        font.family: Style.font_family
+                                        font.pixelSize: Style.textSizeSmall3
+
+                                    }
+                                    DefaultText {
+                                        text: "0.008091 BTC"
+                                        font.family: Style.font_family
+                                        font.pixelSize: Style.textSizeSmall3
+                                    }
+                                }
+                            }
+
+
+                            Item {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                            }
+                        }
+
+                        Qaterial.DebugRectangle {
+                            anchors.fill: parent
+                            visible: false
+                        }
+                    }
+                }
+            }
+        }
+
+        background: FloatingBackground {
+            radius: 4
+        }
+
+    }
+
     RowLayout {
         anchors.fill: parent
-        spacing: 0
+        spacing: -10
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -357,9 +533,9 @@ Item {
             }
             Item {
                 height: 90
-                width: parent.width-15
+                width: parent.width-10
                 FloatingBackground {
-                    anchors.horizontalCenterOffset: 1
+                    anchors.horizontalCenterOffset: 5
                     anchors.fill: parent
                     anchors.margins: 10
                     radius: 10
@@ -375,11 +551,25 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 Row {
                                     anchors.centerIn: parent
-                                    Image {
-                                          height: 36
-                                          width: 36
-                                        source: "qrc:/atomic_defi_design/assets/images/coins/dash.png"
+                                    Item {
+                                        height: 36
+                                        width: 36
+
+                                        Image {
+                                            height: 31
+                                            width: 31
+                                            anchors.centerIn: parent
+                                            source: "qrc:/atomic_defi_design/assets/images/coins/btc.png"
+                                        }
+                                        Image {
+                                            x: -7
+                                            y: -7
+                                            height: 24
+                                            width: 24
+                                            source: "qrc:/atomic_defi_design/assets/images/coins/dash.png"
+                                        }
                                     }
+
                                     spacing: 10
                                     DefaultText {
                                         text: "DASH / BTC"
@@ -392,6 +582,9 @@ Item {
                                         source: Qaterial.Icons.menuDown
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
+                                }
+                                onClicked:  {
+                                    openSelector()
                                 }
                             }
                         }
@@ -742,5 +935,8 @@ Item {
 
         }
 
+
+
     }
+
 }
