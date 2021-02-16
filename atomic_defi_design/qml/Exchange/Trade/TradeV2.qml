@@ -45,6 +45,7 @@ Item {
     property bool isUltraLarge: width>1400
     property string tickerSelected
     property bool isSelected: false
+    property var currentTicker
     property var dataList: [
         {"display": "KMD/BTC", "selected": "KMD", "ticker": "BTC", "selected_balance": 10, "balance": 1},
         {"display": "KMD/RICK", "selected": "KMD", "ticker": "RICK", "selected_balance": 10, "balance": 1}
@@ -192,6 +193,20 @@ Item {
                                 Layout.fillHeight: true
                             }
                         }
+                        onClicked: {
+                            API.app.trading_pg.set_current_orderbook(selected, ticker)
+                            selector_box.close()
+                            ticker_view.model.setFilterFixedString("")
+                            tickerSearchField.text = ""
+//                            currentTicker  = {
+//                                //update_count:           line.update_count,
+//                                ticker:                 model.data(model.index(idx, 0), 257),
+//                                //name:                   model.data(model.index(idx, 0), 259),
+//                                balance:                model.data(model.index(idx, 0), 260),
+//                                //main_currency_balance:  model.data(model.index(idx, 0), 261)
+//                            }
+
+                        }
 
                         Qaterial.DebugRectangle {
                             anchors.fill: parent
@@ -259,7 +274,7 @@ Item {
                                   ListView {
                                       id: listView4
                                       anchors.fill: parent
-                                      model: exchange_trade.model1
+                                      model: API.app.trading_pg.orderbook.asks.proxy_mdl
                                       clip: true
                                       snapMode: ListView.SnapToItem
                                       headerPositioning: ListView.OverlayHeader
@@ -275,7 +290,7 @@ Item {
                                               anchors.horizontalCenter: parent.horizontalCenter
                                               DefaultText {
                                                   Layout.alignment: Qt.AlignVCenter
-                                                  Layout.preferredWidth: 60
+                                                  Layout.preferredWidth: 100
                                                   text: "Price"
                                                   font.family: 'Montserrat'
                                                   font.pixelSize: 13
@@ -284,7 +299,7 @@ Item {
                                               }
                                               DefaultText {
                                                   Layout.alignment: Qt.AlignVCenter
-                                                  Layout.preferredWidth: 50
+                                                  Layout.preferredWidth: 60
                                                   text: "Qty"
                                                   font.family: 'Montserrat'
                                                   font.pixelSize: 13
@@ -322,8 +337,8 @@ Item {
                                               spacing: 10
                                               DefaultText {
                                                   Layout.alignment: Qt.AlignVCenter
-                                                  Layout.preferredWidth: 60
-                                                  text: exchange_trade.model1[index].price
+                                                  Layout.preferredWidth: 100
+                                                  text: General.formatDouble(price, General.amountPrecision, true)
                                                   font.pixelSize: Style.textSizeSmall1
                                                   color: "#E31A93"
                                                   opacity: 1
@@ -334,8 +349,8 @@ Item {
                                               }
                                               DefaultText{
                                                   Layout.alignment: Qt.AlignVCenter
-                                                  Layout.preferredWidth: 50
-                                                  text:  General.nFormatter(exchange_trade.model1[index].qty, 3)
+                                                  Layout.preferredWidth: 60
+                                                  text:  quantity
                                                   font.pixelSize: Style.textSizeSmall1
                                                   horizontalAlignment: Label.AlignRight
                                                   opacity: 1
@@ -351,7 +366,7 @@ Item {
                                                       height: 10
                                                       radius: 101
                                                       color: "#E31A93"
-                                                      width: (exchange_trade.model1[index].percent_depth*(parent.width+40))/100
+                                                      width: ((depth*100)*(parent.width+40))/100
                                                       opacity:  (index+1)/11
                                                       Behavior on width {
                                                           NumberAnimation {
@@ -368,7 +383,7 @@ Item {
                                               DefaultText {
                                                   Layout.alignment: Qt.AlignVCenter
                                                   Layout.preferredWidth: 60
-                                                  text: General.nFormatter(exchange_trade.model1[index].total,3)
+                                                  text: total
                                                   horizontalAlignment: Label.AlignRight
                                                   font.pixelSize: Style.textSizeSmall1
                                                   opacity: 1
@@ -548,20 +563,20 @@ Item {
                                             height: 31
                                             width: 31
                                             anchors.centerIn: parent
-                                            source: "qrc:/atomic_defi_design/assets/images/coins/btc.png"
+                                            source: General.coinIcon(right_ticker)
                                         }
                                         Image {
                                             x: -7
                                             y: -7
                                             height: 24
                                             width: 24
-                                            source: "qrc:/atomic_defi_design/assets/images/coins/dash.png"
+                                            source: General.coinIcon(left_ticker)
                                         }
                                     }
 
                                     spacing: 10
                                     DefaultText {
-                                        text: "DASH / BTC"
+                                        text: left_ticker+" / "+right_ticker
                                         font.family: Style.font_family
                                         anchors.verticalCenter: parent.verticalCenter
                                         font.pixelSize: 26
@@ -613,13 +628,13 @@ Item {
                                 leftPadding: 20
                                 spacing: 5
                                 DefaultText {
-                                    text: "Last Price"
+                                    text: left_ticker+" Balance"
                                     font.family: Style.font_family
                                     font.pixelSize: Style.textSize
 
                                 }
                                 DefaultText {
-                                    text: "0.008091 BTC"
+                                    text: " "+left_ticker
                                     font.family: Style.font_family
                                     font.pixelSize: Style.textSizeSmall2
                                 }
@@ -705,7 +720,7 @@ Item {
                         ListView {
                             id: listView
                             anchors.fill: parent
-                            model: exchange_trade.model1
+                            model: API.app.trading_pg.orderbook.asks.proxy_mdl
                             clip: true
                             Component.onCompleted: positionViewAtEnd()
                             delegate: Item {
@@ -719,7 +734,7 @@ Item {
                                     DefaultText {
                                         Layout.alignment: Qt.AlignVCenter
                                         Layout.preferredWidth: 60
-                                        text: exchange_trade.model1[index].price
+                                        text: General.formatDouble(price, General.amountPrecision, true)
                                         font.pixelSize: Style.textSizeSmall1
                                         color: "#E31A93"
                                         opacity: 1
@@ -731,7 +746,7 @@ Item {
                                     DefaultText{
                                         Layout.alignment: Qt.AlignVCenter
                                         Layout.preferredWidth: 50
-                                        text:  General.nFormatter(exchange_trade.model1[index].qty, 3)
+                                        text:  General.formatDouble(quantity, 3, true)
                                         font.pixelSize: Style.textSizeSmall1
                                         horizontalAlignment: Label.AlignRight
                                         opacity: 1
@@ -764,7 +779,7 @@ Item {
                                     DefaultText {
                                         Layout.alignment: Qt.AlignVCenter
                                         Layout.preferredWidth: 60
-                                        text: General.nFormatter(exchange_trade.model1[index].total,3)
+                                        text: General.nFormatter(total,3)
                                         horizontalAlignment: Label.AlignRight
                                         font.pixelSize: Style.textSizeSmall1
                                         opacity: 1
