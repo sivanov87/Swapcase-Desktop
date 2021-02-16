@@ -223,6 +223,7 @@ namespace atomic_dex
 
         //! Get Current orderbook
         [[nodiscard]] t_orderbook_answer get_orderbook(t_mm2_ec& ec) const noexcept;
+        [[nodiscard]] std::string get_current_left_ticker_orderbook() const noexcept;
 
         //! Get Swaps
         [[nodiscard]] orders_and_swaps get_orders_and_swaps() const noexcept;

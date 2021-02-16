@@ -1398,13 +1398,6 @@ namespace atomic_dex
         return batch;
     }
 
-    /*void
-    mm2_service::add_orders_answer(t_my_orders_answer answer)
-    {
-        //m_orders = answer;
-        //this->dispatcher_.trigger<process_orders_finished>();
-    }*/
-
     std::shared_ptr<t_http_client>
     mm2_service::get_mm2_client() noexcept
     {
@@ -1622,5 +1615,11 @@ namespace atomic_dex
                 this->dispatcher_.trigger<fatal_notification>("connection dropped");
             }
         }
+    }
+
+    std::string
+    mm2_service::get_current_left_ticker_orderbook() const noexcept
+    {
+        return m_synchronized_ticker_pair->first;
     }
 } // namespace atomic_dex

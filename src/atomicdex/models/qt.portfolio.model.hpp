@@ -65,7 +65,10 @@ namespace atomic_dex
             MultiTickerFeesInfo,         ///< the fees json infos (it's readonly from front-end)
             CoinType,                    ///< Type of the coin
             Address,                     ///< Public address
-            PrivKey                      ///< Priv key
+            PrivKey,                     ///< Priv key
+            SelectedRole,                ///< Current selected coin
+            SelectedBalanceRole,         ///< current selected balance
+            CompactNameRole              ///< current_selected/current_element
         };
         Q_ENUM(PortfolioRoles)
 

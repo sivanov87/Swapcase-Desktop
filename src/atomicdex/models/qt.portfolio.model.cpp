@@ -108,7 +108,8 @@ namespace atomic_dex
             }
             auto update_functor = [coin = std::move(coin), &coingecko, &mm2_system, &price_service, currency, fiat, this]() {
                 const std::string& ticker = coin.ticker;
-                if (const auto res = this->match(this->index(0, 0), TickerRole, QString::fromStdString(ticker), 1, Qt::MatchFlag::MatchExactly); not res.isEmpty())
+                if (const auto res = this->match(this->index(0, 0), TickerRole, QString::fromStdString(ticker), 1, Qt::MatchFlag::MatchExactly);
+                    not res.isEmpty())
                 {
                     std::error_code    ec;
                     const QModelIndex& idx                         = res.at(0);
@@ -235,6 +236,23 @@ namespace atomic_dex
             return item.public_address;
         case PrivKey:
             return item.priv_key;
+        case SelectedRole:
+            return QString::fromStdString(m_system_manager.get_system<mm2_service>().get_current_left_ticker_orderbook());
+        case CompactNameRole:
+            return QString::fromStdString(m_system_manager.get_system<mm2_service>().get_current_left_ticker_orderbook()) + "/" + item.ticker;
+        case SelectedBalanceRole:
+        {
+            QString ticker = QString::fromStdString(m_system_manager.get_system<mm2_service>().get_current_left_ticker_orderbook());
+            if (const auto res = this->match(this->index(0, 0), TickerRole, ticker, 1, Qt::MatchFlag::MatchExactly); not res.isEmpty())
+            {
+                const QModelIndex& idx = res.at(0);
+                return this->data(idx, BalanceRole);
+            }
+            else
+            {
+                return "0";
+            }
+        }
         }
         return {};
     }
@@ -380,7 +398,10 @@ namespace atomic_dex
             {MultiTickerReceiveAmount, "multi_ticker_receive_amount"},
             {MultiTickerFeesInfo, "multi_ticker_fees_info"},
             {Address, "public_address"},
-            {PrivKey, "priv_key"}};
+            {PrivKey, "priv_key"},
+            {SelectedRole, "selected"},
+            {CompactNameRole, "display_compact"},
+            {SelectedBalanceRole, "selected_balance"}};
     }
 
     portfolio_proxy_model*

@@ -26,6 +26,7 @@ namespace atomic_dex
         Q_OBJECT
         QString m_excluded_coin{""};
         bool    am_i_a_market_selector{false};
+        bool    m_exclude_if_already_selected{false};
         
         // Tells if the proxy should filter only coins with a balance over than 0.
         bool    m_with_balance{false};
@@ -58,6 +59,7 @@ namespace atomic_dex
       public:
         void set_excluded_coin(const QString& ticker);
         void is_a_market_selector(bool is_market_selector) noexcept;
+        void set_unique_selector(bool is_unique_selector) noexcept;
 
         void reset();
 

@@ -64,6 +64,9 @@ namespace atomic_dex
         case portfolio_model::CoinType:
         case portfolio_model::Address:
         case portfolio_model::PrivKey:
+        case portfolio_model::SelectedRole:
+        case portfolio_model::CompactNameRole:
+        case portfolio_model::SelectedBalanceRole:
             return false;
         }
     }
@@ -73,8 +76,9 @@ namespace atomic_dex
     {
         QModelIndex idx = this->sourceModel()->index(source_row, 0, source_parent);
         assert(this->sourceModel()->hasIndex(idx.row(), 0));
-        QString ticker = this->sourceModel()->data(idx, atomic_dex::portfolio_model::TickerRole).toString();
-        QString type   = this->sourceModel()->data(idx, atomic_dex::portfolio_model::CoinType).toString();
+        QString ticker   = this->sourceModel()->data(idx, atomic_dex::portfolio_model::TickerRole).toString();
+        QString selected = this->sourceModel()->data(idx, atomic_dex::portfolio_model::SelectedRole).toString();
+        QString type     = this->sourceModel()->data(idx, atomic_dex::portfolio_model::CoinType).toString();
 
         if (this->filterRole() == atomic_dex::portfolio_model::MultiTickerCurrentlyEnabled)
         {
@@ -83,6 +87,11 @@ namespace atomic_dex
             {
                 return false;
             }
+        }
+
+        if (selected == ticker && m_exclude_if_already_selected)
+        {
+            return false;
         }
 
         if (m_excluded_coin == ticker)
@@ -167,5 +176,11 @@ namespace atomic_dex
             m_with_balance = value;
             this->invalidateFilter();
         }
+    }
+
+    void
+    portfolio_proxy_model::set_unique_selector(bool is_unique_selector) noexcept
+    {
+        m_exclude_if_already_selected = is_unique_selector;
     }
 } // namespace atomic_dex

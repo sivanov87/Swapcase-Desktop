@@ -23,9 +23,18 @@
 namespace atomic_dex
 {
     market_pairs::market_pairs(portfolio_model* portfolio_mdl, QObject* parent) :
-        QObject(parent), m_left_selection_box(new portfolio_proxy_model(nullptr)), m_right_selection_box(new portfolio_proxy_model(nullptr)),
+        QObject(parent),
+        m_unique_selection_box(new portfolio_proxy_model(nullptr)),
+        m_left_selection_box(new portfolio_proxy_model(nullptr)), m_right_selection_box(new portfolio_proxy_model(nullptr)),
         m_multiple_selection_box(new portfolio_proxy_model(nullptr)), m_multi_order_coins(new portfolio_proxy_model(nullptr))
     {
+        m_unique_selection_box->set_unique_selector(true);
+        m_unique_selection_box->setSourceModel(portfolio_mdl);
+        m_unique_selection_box->setDynamicSortFilter(true);
+        m_unique_selection_box->sort_by_name(true);
+        this->m_unique_selection_box->setFilterRole(portfolio_model::PortfolioRoles::CompactNameRole);
+        this->m_unique_selection_box->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        
         m_left_selection_box->is_a_market_selector(true);
         m_left_selection_box->setSourceModel(portfolio_mdl);
         m_left_selection_box->setDynamicSortFilter(true);
@@ -169,6 +178,11 @@ namespace atomic_dex
             m_rel_selected_coin = std::move(rel_coin);
             emit relSelectedCoinChanged();
         }
+    }
+    portfolio_proxy_model*
+    market_pairs::get_unique_selection_box() const noexcept
+    {
+        return m_unique_selection_box;
     }
 } // namespace atomic_dex
 
