@@ -19,6 +19,7 @@
 
 //! Project Headers
 #include "atomicdex/api/mm2/mm2.hpp"
+#include "atomicdex/api/mm2/rpc.trade.preimage.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
 #include "atomicdex/services/price/global.provider.hpp"
 #include "atomicdex/utilities/global.utilities.hpp"
@@ -159,6 +160,7 @@ namespace
     }
 } // namespace
 
+<<<<<<< HEAD
 //! Implementation RPC [best_orders]
 namespace mm2::api
 {
@@ -277,6 +279,8 @@ namespace mm2::api
     }
 } // namespace mm2::api
 
+=======
+>>>>>>> dev
 //! Implementation RPC [disable_coin]
 namespace mm2::api
 {
@@ -303,25 +307,6 @@ namespace mm2::api
 
 namespace mm2::api
 {
-    void
-    to_json(nlohmann::json& j, const balance_request& cfg)
-    {
-        j["coin"] = cfg.coin;
-    }
-
-    void
-    from_json(const nlohmann::json& j, balance_answer& cfg)
-    {
-        j.at("address").get_to(cfg.address);
-        j.at("balance").get_to(cfg.balance);
-        cfg.balance = atomic_dex::utils::adjust_precision(cfg.balance);
-        j.at("coin").get_to(cfg.coin);
-        if (cfg.coin == "BCH")
-        {
-            cfg.address = cfg.address.substr(sizeof("bitcoincash"));
-        }
-    }
-
     void
     from_json(const nlohmann::json& j, fee_regular_coin& cfg)
     {
@@ -1144,6 +1129,11 @@ namespace mm2::api
         results.swaps_id.reserve(swaps.size());
         for (auto&& cur: swaps)
         {
+            if (cur.is_null())
+            {
+                SPDLOG_WARN("Current swap object is null - skipping");
+                continue;
+            }
             order_swaps_data to_add;
             from_json(cur, to_add);
             for (auto&& cur_event: to_add.events)
@@ -1173,7 +1163,6 @@ namespace mm2::api
             double average                        = sum / values.size();
             results.average_events_time[evt_name] = average;
         }
-        SPDLOG_INFO("total pages: {}", results.total_pages);
     }
 
     void
@@ -1376,6 +1365,7 @@ namespace mm2::api
     template mm2::api::active_swaps_answer    rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) noexcept;
     template mm2::api::show_priv_key_answer   rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) noexcept;
     template mm2::api::best_orders_answer     rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) noexcept;
+    template mm2::api::trade_preimage_answer  rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) noexcept;
 
     template <typename RpcReturnType>
     RpcReturnType

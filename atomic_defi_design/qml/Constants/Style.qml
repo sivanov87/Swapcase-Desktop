@@ -224,6 +224,9 @@ QtObject {
     readonly property string colorSelectedText: Style.colorTheme9
     readonly property string colorSelection: Style.colorGreen2
 
+    readonly property string colorTrendingLine: dark_theme ? Style.colorGreen : "#37a6ef"
+    readonly property string colorTrendingUnderLine: dark_theme ? Style.colorGradient3 : "#e3f2fd"
+
     readonly property string modalValueColor: colorWhite4
 
     function getValueColor(v) {
@@ -253,6 +256,7 @@ QtObject {
                                           "CLC": "#0970DC",
                                           "FTC": "#FFFFFF",
                                           "GLEEC": "#8C41FF",
+                                          "GRS": "#377E96",
                                           "DOGE": "#C3A634",
                                           "ETH": "#627EEA",
                                           "KMD": "#2B6680",
@@ -334,7 +338,7 @@ QtObject {
                                           "MKR": "#1BAF9F",
                                           "NPXS": "#F3CB00",
                                           "POWR": "#05BCAA",
-                                          "QI": "#FFFFFF",
+                                          "QIAD": "#FFFFFF",
                                           "QKC": "#2175B4",
                                           "QNT": "#46DDC8",
                                           "REP": "#0E0E21",

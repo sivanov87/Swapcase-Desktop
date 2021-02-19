@@ -1,8 +1,12 @@
+// Qt Imports
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
-
 import QtGraphicalEffects 1.0
+import Qt.labs.settings 1.0
+
+
+// Project Imports
 import "../Components"
 import "../Constants"
 
@@ -14,7 +18,13 @@ Item {
     }
 
     readonly property string mm2_version: API.app.settings_pg.get_mm2_version()
+    property var recommended_fiats: API.app.settings_pg.get_recommended_fiats()
     property var fiats: API.app.settings_pg.get_available_fiats()
+
+    Settings {
+        id: atomic_settings2
+        fileName: atomic_cfg_file
+    }
 
     InnerBackground {
         id: layout_background
@@ -49,6 +59,57 @@ Item {
                     currentIndex = model.indexOf(API.app.settings_pg.current_fiat)
                     initialized = true
                 }
+
+                RowLayout {
+                    Layout.topMargin: 5
+                    Layout.fillWidth: true
+                    Layout.leftMargin: 2
+                    Layout.rightMargin: Layout.leftMargin
+
+                    DefaultText {
+                        text: qsTr("Recommended: ")
+                        font.pixelSize: Style.textSizeSmall4
+                    }
+
+                    Grid {
+                        Layout.leftMargin: 30
+                        Layout.alignment: Qt.AlignVCenter
+
+                        clip: true
+
+                        columns: 6
+                        spacing: 25
+
+                        layoutDirection: Qt.LeftToRight
+
+                        Repeater {
+                            model: recommended_fiats
+
+                            delegate: DefaultText {
+                                text: modelData
+                                color: fiats_mouse_area.containsMouse ? Style.colorText : Style.colorText2
+
+                                DefaultMouseArea {
+                                    id: fiats_mouse_area
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    onClicked: {
+                                        API.app.settings_pg.current_fiat = modelData
+                                        API.app.settings_pg.current_currency = modelData
+                                        combo_fiat.currentIndex = combo_fiat.model.indexOf(API.app.settings_pg.current_fiat)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            HorizontalLine {
+                Layout.fillWidth: true
+                Layout.leftMargin: combo_fiat.Layout.leftMargin
+                Layout.rightMargin: Layout.leftMargin
+                Layout.topMargin: 10
             }
 
             Languages {
@@ -71,6 +132,27 @@ Item {
                 text: qsTr("Enable Desktop Notifications")
                 Component.onCompleted: checked = API.app.settings_pg.notification_enabled
                 onCheckedChanged: API.app.settings_pg.notification_enabled = checked
+            }
+            DefaultSwitch {
+                property bool firstTime: true
+                Layout.alignment: Qt.AlignHCenter
+                Layout.leftMargin: combo_fiat.Layout.leftMargin
+                Layout.rightMargin: Layout.leftMargin
+                checked: parseInt(atomic_settings2.value("FontMode")) === 1
+                text: qsTr("Use QtTextRendering Or NativeTextRendering")
+                onCheckedChanged: {
+                    if(checked){
+                        atomic_settings2.setValue("FontMode", 1)
+                    }else {
+                        atomic_settings2.setValue("FontMode", 0)
+                    }
+                    if(firstTime) {
+                        firstTime = false
+                    }else {
+                        restart_modal.open()
+                    }
+
+                }
             }
 
             DefaultButton {

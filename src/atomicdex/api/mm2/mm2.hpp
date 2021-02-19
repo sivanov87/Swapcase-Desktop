@@ -46,6 +46,7 @@ namespace mm2::api
 
     std::string rpc_version();
 
+<<<<<<< HEAD
     struct best_orders_request
     {
         std::string coin;
@@ -150,6 +151,8 @@ namespace mm2::api
 
     void from_json(const nlohmann::json& j, electrum_answer& answer);
 
+=======
+>>>>>>> dev
     struct disable_coin_request
     {
         std::string coin;
@@ -205,24 +208,6 @@ namespace mm2::api
 
     recover_funds_of_swap_answer rpc_recover_funds(recover_funds_of_swap_request&& request, std::shared_ptr<t_http_client> mm2_client);
 
-
-    struct balance_request
-    {
-        std::string coin;
-    };
-
-    struct balance_answer
-    {
-        std::string address;
-        std::string balance;
-        std::string coin;
-        int         rpc_result_code;
-        std::string raw_result;
-    };
-
-    void to_json(nlohmann::json& j, const balance_request& cfg);
-
-    void from_json(const nlohmann::json& j, balance_answer& cfg);
 
     struct trade_fee_request
     {
@@ -747,8 +732,6 @@ namespace mm2::api
 
 namespace atomic_dex
 {
-    using t_balance_request         = ::mm2::api::balance_request;
-    using t_balance_answer          = ::mm2::api::balance_answer;
     using t_buy_request             = ::mm2::api::buy_request;
     using t_my_orders_answer        = ::mm2::api::my_orders_answer;
     using t_sell_request            = ::mm2::api::sell_request;
@@ -759,17 +742,14 @@ namespace atomic_dex
     using t_broadcast_request       = ::mm2::api::send_raw_transaction_request;
     using t_orderbook_request       = ::mm2::api::orderbook_request;
     using t_orderbook_answer        = ::mm2::api::orderbook_answer;
-    using t_electrum_request        = ::mm2::api::electrum_request;
-    using t_enable_request          = ::mm2::api::enable_request;
     using t_disable_coin_request    = ::mm2::api::disable_coin_request;
     using t_tx_history_request      = ::mm2::api::tx_history_request;
     using t_my_recent_swaps_answer  = ::mm2::api::my_recent_swaps_answer;
     using t_my_recent_swaps_request = ::mm2::api::my_recent_swaps_request;
     using t_active_swaps_request    = ::mm2::api::active_swaps_request;
     using t_active_swaps_answer     = ::mm2::api::active_swaps_answer;
-    // using t_my_order_contents       = ::mm2::api::my_order_contents;
-    using t_get_trade_fee_request = ::mm2::api::trade_fee_request;
-    using t_get_trade_fee_answer  = ::mm2::api::trade_fee_answer;
     using t_best_orders_request   = ::mm2::api::best_orders_request;
     using t_best_orders_answer    = ::mm2::api::best_orders_answer;
+    using t_get_trade_fee_request   = ::mm2::api::trade_fee_request;
+    using t_get_trade_fee_answer    = ::mm2::api::trade_fee_answer;
 } // namespace atomic_dex

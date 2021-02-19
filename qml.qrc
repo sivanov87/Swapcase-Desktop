@@ -76,6 +76,7 @@
         <file>atomic_defi_design/assets/images/coins/eca.png</file>
         <file>atomic_defi_design/assets/images/coins/ftc.png</file>
         <file>atomic_defi_design/assets/images/coins/gleec.png</file>
+        <file>atomic_defi_design/assets/images/coins/grs.png</file>
         <file>atomic_defi_design/assets/images/coins/jumblr.png</file>
         <file>atomic_defi_design/assets/images/coins/koin.png</file>
         <file>atomic_defi_design/assets/images/coins/ltc.png</file>
@@ -251,6 +252,7 @@
         <file>atomic_defi_design/qml/Wallet/ClaimFaucetResultModal.qml</file>
         <file>atomic_defi_design/qml/Wallet/ReceiveModal.qml</file>
         <file>atomic_defi_design/qml/Wallet/SendModal.qml</file>
+        <file>atomic_defi_design/qml/Wallet/SendModalContactList.qml</file>
         <file>atomic_defi_design/qml/Wallet/SendResult.qml</file>
         <file>atomic_defi_design/qml/Wallet/PriceGraph.qml</file>
         <file>atomic_defi_design/qml/Wallet/EnableCoinModal.qml</file>
@@ -331,6 +333,7 @@
         <file>atomic_defi_design/assets/images/coins/chz.png</file>
         <file>atomic_defi_design/assets/images/coins/yfii.png</file>
         <file>atomic_defi_design/assets/images/coins/paxg.png</file>
+        <file>atomic_defi_design/assets/images/coins/qiair.png</file>
         <file>atomic_defi_design/assets/images/coins/qi.png</file>
         <file>atomic_defi_design/assets/images/coins/skl.png</file>
         <file>atomic_defi_design/assets/images/coins/pnk.png</file>
