@@ -46,7 +46,6 @@ namespace mm2::api
 
     std::string rpc_version();
 
-<<<<<<< HEAD
     struct best_orders_request
     {
         std::string coin;
@@ -74,85 +73,6 @@ namespace mm2::api
 
     void from_json(const nlohmann::json& j, best_orders_answer& answer);
 
-    //! max taker vol
-    struct max_taker_vol_request
-    {
-        std::string                coin;
-        std::optional<std::string> trade_with;
-    };
-
-    void to_json(nlohmann::json& j, const max_taker_vol_request& cfg);
-
-    struct max_taker_vol_answer_success
-    {
-        std::string denom;
-        std::string numer;
-        std::string decimal;
-    };
-
-    void from_json(const nlohmann::json& j, max_taker_vol_answer_success& cfg);
-
-    struct max_taker_vol_answer
-    {
-        std::optional<max_taker_vol_answer_success> result;
-        std::optional<std::string>                  error;
-        int                                         rpc_result_code;
-        std::string                                 raw_result;
-    };
-
-    void from_json(const nlohmann::json& j, max_taker_vol_answer& answer);
-
-    //! Only for erc 20
-    struct enable_request
-    {
-        std::string              coin_name;
-        std::vector<std::string> urls;
-        CoinType                 coin_type;
-        const std::string        erc_swap_contract_address{"0x8500AFc0bc5214728082163326C2FF0C73f4a871"};
-        std::string              gas_station_url{"https://ethgasstation.info/json/ethgasAPI.json"};
-        std::string              type; ///< QRC-20 ?
-        bool                     with_tx_history{true};
-    };
-
-    void to_json(nlohmann::json& j, const enable_request& cfg);
-
-    struct enable_answer
-    {
-        std::string address;
-        std::string balance;
-        std::string result;
-        std::string raw_result;
-        int         rpc_result_code;
-    };
-
-    void from_json(const nlohmann::json& j, const enable_answer& cfg);
-
-    struct electrum_request
-    {
-        std::string                              coin_name;
-        std::vector<atomic_dex::electrum_server> servers;
-        CoinType                                 coin_type;
-        bool                                     is_testnet{false};
-        bool                                     with_tx_history{true};
-        const std::string                        testnet_qrc_swap_contract_address{"0xba8b71f3544b93e2f681f996da519a98ace0107a"};
-        const std::string                        mainnet_qrc_swap_contract_address{"0x2f754733acd6d753731c00fee32cb484551cc15d"};
-    };
-
-    struct electrum_answer
-    {
-        std::string address;
-        std::string balance;
-        std::string result;
-        int         rpc_result_code;
-        std::string raw_result;
-    };
-
-    void to_json(nlohmann::json& j, const electrum_request& cfg);
-
-    void from_json(const nlohmann::json& j, electrum_answer& answer);
-
-=======
->>>>>>> dev
     struct disable_coin_request
     {
         std::string coin;
@@ -748,8 +668,8 @@ namespace atomic_dex
     using t_my_recent_swaps_request = ::mm2::api::my_recent_swaps_request;
     using t_active_swaps_request    = ::mm2::api::active_swaps_request;
     using t_active_swaps_answer     = ::mm2::api::active_swaps_answer;
-    using t_best_orders_request   = ::mm2::api::best_orders_request;
-    using t_best_orders_answer    = ::mm2::api::best_orders_answer;
+    using t_best_orders_request     = ::mm2::api::best_orders_request;
+    using t_best_orders_answer      = ::mm2::api::best_orders_answer;
     using t_get_trade_fee_request   = ::mm2::api::trade_fee_request;
     using t_get_trade_fee_answer    = ::mm2::api::trade_fee_answer;
 } // namespace atomic_dex
