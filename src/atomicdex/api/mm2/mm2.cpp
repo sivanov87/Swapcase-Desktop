@@ -160,7 +160,6 @@ namespace
     }
 } // namespace
 
-<<<<<<< HEAD
 //! Implementation RPC [best_orders]
 namespace mm2::api
 {
@@ -279,8 +278,6 @@ namespace mm2::api
     }
 } // namespace mm2::api
 
-=======
->>>>>>> dev
 //! Implementation RPC [disable_coin]
 namespace mm2::api
 {
