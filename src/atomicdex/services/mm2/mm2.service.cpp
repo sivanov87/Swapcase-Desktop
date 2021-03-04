@@ -861,7 +861,9 @@ namespace atomic_dex
                 }
                 std::this_thread::sleep_for(1s);
             }
-
+#if !defined(WIN32)
+            web::http::client::details::set_pooling_enabled(false);
+#endif
             web::http::client::http_client_config cfg;
             using namespace std::chrono_literals;
             cfg.set_timeout(30s);

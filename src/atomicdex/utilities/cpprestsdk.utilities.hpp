@@ -20,6 +20,10 @@
 
 #define _TURN_OFF_PLATFORM_STRING
 #include <cpprest/http_client.h>
+namespace web::http::client::details
+{
+    void set_pooling_enabled(bool);
+}
 #ifdef _WIN32
 #    define TO_STD_STR(ws_str) utility::conversions::to_utf8string(ws_str)
 #    define FROM_STD_STR(utf8str) utility::conversions::to_string_t(utf8str)
