@@ -889,7 +889,7 @@ namespace atomic_dex
     mm2_service::get_tx(t_mm2_ec& ec) const noexcept
     {
         const auto& ticker = get_current_ticker();
-        //SPDLOG_DEBUG("asking history of ticker: {}", ticker);
+        // SPDLOG_DEBUG("asking history of ticker: {}", ticker);
         const auto underlying_tx_history_map = m_tx_informations.synchronize();
         const auto coin_type                 = get_coin_info(ticker).coin_type;
         const auto it = !(coin_type == CoinType::ERC20) ? underlying_tx_history_map->find("result") : underlying_tx_history_map->find(ticker);
@@ -1030,7 +1030,7 @@ namespace atomic_dex
             //! Compute everything
             m_orders_and_swaps = std::move(result);
 
-            //SPDLOG_INFO("Time elasped for batch_orders_and_swaps: {} seconds", stopwatch);
+            // SPDLOG_INFO("Time elasped for batch_orders_and_swaps: {} seconds", stopwatch);
             this->dispatcher_.trigger<process_swaps_and_orders_finished>(after_manual_reset);
         };
 
@@ -1622,15 +1622,24 @@ namespace atomic_dex
 #if defined(linux) || defined(__APPLE__)
             SPDLOG_ERROR("stacktrace: {}", boost::stacktrace::to_string(boost::stacktrace::stacktrace()));
 #endif
-            if (std::string(e.what()).find("Failed to read HTTP status line") != std::string::npos ||
-                std::string(e.what()).find("WinHttpReceiveResponse: 12002: The operation timed out") != std::string::npos)
+            if ((std::string(e.what()).find("Failed to read HTTP status line") != std::string::npos ||
+                 std::string(e.what()).find("WinHttpReceiveResponse: 12002: The operation timed out") != std::string::npos) &&
+                m_mm2_running)
             {
-                const auto& internet_service = this->m_system_manager.get_system<internet_service_checker>();
+                /*const auto& internet_service = this->m_system_manager.get_system<internet_service_checker>();
                 if (!internet_service.is_internet_alive())
                 {
                     SPDLOG_WARN("We should reset connection here");
                     this->dispatcher_.trigger<fatal_notification>("connection dropped");
-                }
+                }*/
+                SPDLOG_WARN("Forcing a full reset, closing all pending request, recreating the client");
+                m_mm2_running = false;
+                m_token_source.cancel();
+                web::http::client::http_client_config cfg;
+                using namespace std::chrono_literals;
+                cfg.set_timeout(30s);
+                m_mm2_client  = std::make_shared<web::http::client::http_client>(FROM_STD_STR(::mm2::api::g_endpoint), cfg);
+                m_mm2_running = true;
             }
         }
     }
