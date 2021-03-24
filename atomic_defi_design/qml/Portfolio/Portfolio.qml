@@ -255,6 +255,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignTop
         Layout.fillWidth: true
         Layout.fillHeight: true
+        reuseItems: true
 
         model: portfolio_coins
 
