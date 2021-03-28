@@ -41,6 +41,7 @@
 #include "atomicdex/pages/qt.addressbook.page.hpp"
 #include "atomicdex/pages/qt.portfolio.page.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
+#include "atomicdex/pages/qt.simple.trading.page.hpp"
 #include "atomicdex/pages/qt.trading.page.hpp"
 #include "atomicdex/pages/qt.wallet.page.hpp"
 #include "atomicdex/services/exporter/exporter.service.hpp"
@@ -71,6 +72,7 @@ namespace atomic_dex
         Q_PROPERTY(update_service_checker* update_checker READ get_update_checker NOTIFY updateCheckerChanged)
         Q_PROPERTY(exporter_service* exporter_service READ get_exporter_service NOTIFY exporterServiceChanged)
         Q_PROPERTY(trading_page* trading_pg READ get_trading_page NOTIFY tradingPageChanged)
+        Q_PROPERTY(simple_trading_page* simple_trading_pg READ get_simple_trading_page NOTIFY simpleTradingPageChanged)
         Q_PROPERTY(wallet_page* wallet_pg READ get_wallet_page NOTIFY walletPageChanged)
         Q_PROPERTY(settings_page* settings_pg READ get_settings_page NOTIFY settingsPageChanged)
         Q_PROPERTY(qt_wallet_manager* wallet_mgr READ get_wallet_mgr NOTIFY walletMgrChanged)
@@ -109,40 +111,41 @@ namespace atomic_dex
         application& operator=(application&& other) = delete;
 
         //! Constructor
-        explicit application(QObject* pParent = nullptr) ;
-        ~application()  final = default;
+        explicit application(QObject* pParent = nullptr);
+        ~application() final = default;
 
         //! Post constructor
         void post_handle_settings();
 
         //! entt::dispatcher events
-        void on_ticker_balance_updated_event(const ticker_balance_updated&) ;
-        void on_fiat_rate_updated(const fiat_rate_updated&) ;
-        void on_coin_fully_initialized_event(const coin_fully_initialized&) ;
-        void on_mm2_initialized_event(const mm2_initialized&) ;
-        void on_process_orders_and_swaps_finished_event(const process_swaps_and_orders_finished&) ;
+        void on_ticker_balance_updated_event(const ticker_balance_updated&);
+        void on_fiat_rate_updated(const fiat_rate_updated&);
+        void on_coin_fully_initialized_event(const coin_fully_initialized&);
+        void on_mm2_initialized_event(const mm2_initialized&);
+        void on_process_orders_and_swaps_finished_event(const process_swaps_and_orders_finished&);
 
         //! Properties Getter
-        mm2_service&                     get_mm2() ;
-        [[nodiscard]] const mm2_service& get_mm2() const ;
-        entt::dispatcher&                get_dispatcher() ;
-        const entt::registry&            get_registry() const ;
-        entt::registry&                  get_registry() ;
-        [[nodiscard]] addressbook_page*  get_addressbook_page() const ;
-        [[nodiscard]] portfolio_page*    get_portfolio_page() const ;
-        [[nodiscard]] wallet_page*       get_wallet_page() const ;
-        orders_model*                    get_orders() const ;
-        notification_manager*            get_notification_manager() const ;
-        trading_page*                    get_trading_page() const ;
-        settings_page*                   get_settings_page() const ;
-        qt_wallet_manager*               get_wallet_mgr() const ;
-        internet_service_checker*        get_internet_checker() const ;
-        ip_service_checker*              get_ip_checker() const ;
-        update_service_checker*          get_update_checker() const ;
-        exporter_service*                get_exporter_service() const ;
+        mm2_service&                     get_mm2();
+        [[nodiscard]] const mm2_service& get_mm2() const;
+        entt::dispatcher&                get_dispatcher();
+        const entt::registry&            get_registry() const;
+        entt::registry&                  get_registry();
+        [[nodiscard]] addressbook_page*  get_addressbook_page() const;
+        [[nodiscard]] portfolio_page*    get_portfolio_page() const;
+        [[nodiscard]] wallet_page*       get_wallet_page() const;
+        orders_model*                    get_orders() const;
+        notification_manager*            get_notification_manager() const;
+        trading_page*                    get_trading_page() const;
+        simple_trading_page*             get_simple_trading_page() const;
+        settings_page*                   get_settings_page() const;
+        qt_wallet_manager*               get_wallet_mgr() const;
+        internet_service_checker*        get_internet_checker() const;
+        ip_service_checker*              get_ip_checker() const;
+        update_service_checker*          get_update_checker() const;
+        exporter_service*                get_exporter_service() const;
 
         //! Properties Setter
-        void set_qt_app(std::shared_ptr<QApplication> app, QQmlApplicationEngine* qml_engine) ;
+        void set_qt_app(std::shared_ptr<QApplication> app, QQmlApplicationEngine* qml_engine);
 
         //! Launch the internal loop for the SDK.
         void launch();
@@ -151,7 +154,7 @@ namespace atomic_dex
         Q_INVOKABLE static void restart();
 
         //! Wallet Manager QML API Bindings, this internally call the `atomic_dex::qt_wallet_manager`
-        Q_INVOKABLE bool is_pin_cfg_enabled() const ;
+        Q_INVOKABLE bool is_pin_cfg_enabled() const;
 
         //! Misc
         Q_INVOKABLE static QString to_eth_checksum_qt(const QString& eth_lowercase_address);
@@ -184,6 +187,7 @@ namespace atomic_dex
         void ordersChanged();
         void updateCheckerChanged();
         void tradingPageChanged();
+        void simpleTradingPageChanged();
         void settingsPageChanged();
         void internetCheckerChanged();
         void ipCheckerChanged();

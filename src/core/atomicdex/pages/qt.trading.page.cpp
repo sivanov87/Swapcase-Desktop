@@ -21,6 +21,7 @@
 #include "atomicdex/api/mm2/rpc.buy.hpp"
 #include "atomicdex/api/mm2/rpc.sell.hpp"
 #include "atomicdex/api/mm2/rpc.trade.preimage.hpp"
+#include "atomicdex/pages/common/common.trading.hpp"
 #include "atomicdex/pages/qt.portfolio.page.hpp"
 #include "atomicdex/pages/qt.settings.page.hpp"
 #include "atomicdex/pages/qt.trading.page.hpp"
@@ -414,7 +415,7 @@ namespace atomic_dex
                     auto* wrapper = get_orderbook_wrapper();
                     m_models_actions[orderbook_need_a_reset] ? wrapper->reset_orderbook(result) : wrapper->refresh_orderbook(result);
                     this->determine_error_cases();
-                    if (m_models_actions[orderbook_need_a_reset] && this->m_current_trading_mode == TradingModeGadget::Pro)
+                    if (m_models_actions[orderbook_need_a_reset])
                     {
                         this->set_preffered_settings();
                     }
@@ -539,10 +540,8 @@ namespace atomic_dex
             {
                 this->determine_max_volume();
             }
-            if (this->m_current_trading_mode != TradingMode::Simple)
-            {
-                this->determine_total_amount();
-            }
+
+            this->determine_total_amount();
 
             if (this->m_preffered_order.has_value())
             {
@@ -591,10 +590,7 @@ namespace atomic_dex
             }
             m_volume = std::move(volume);
             // SPDLOG_INFO("volume is : [{}]", m_volume.toStdString());
-            if (m_current_trading_mode != TradingMode::Simple)
-            {
-                this->determine_total_amount();
-            }
+            this->determine_total_amount();
             emit volumeChanged();
             this->cap_volume();
         }
@@ -778,7 +774,7 @@ namespace atomic_dex
     {
         if (m_current_trading_mode != trading_mode)
         {
-            this->clear_forms();
+            // this->clear_forms();
             this->set_market_mode(MarketMode::Sell);
             m_current_trading_mode = trading_mode;
             SPDLOG_INFO("new trading mode: {}", QMetaEnum::fromType<TradingMode>().valueToKey(trading_mode));
@@ -887,31 +883,13 @@ namespace atomic_dex
     void
     trading_page::set_total_amount(QString total_amount)
     {
-        if (this->m_current_trading_mode != TradingMode::Simple)
+        if (m_total_amount != total_amount)
         {
-            if (m_total_amount != total_amount)
-            {
-                m_total_amount = std::move(total_amount);
-                // SPDLOG_DEBUG("total_amount is [{}]", m_total_amount.toStdString());
-                emit totalAmountChanged();
-                emit baseAmountChanged();
-                emit relAmountChanged();
-            }
-        }
-        else
-        {
-            m_total_amount = total_amount;
-            emit       totalAmountChanged();
-            emit       baseAmountChanged();
-            emit       relAmountChanged();
-            t_float_50 price_f(0);
-            t_float_50 total_amount_f(safe_float(total_amount.toStdString()));
-            t_float_50 volume_f(safe_float(m_volume.toStdString()));
-            if (volume_f > 0)
-            {
-                price_f = total_amount_f / volume_f;
-            }
-            this->set_price(QString::fromStdString(utils::format_float(price_f)));
+            m_total_amount = std::move(total_amount);
+            // SPDLOG_DEBUG("total_amount is [{}]", m_total_amount.toStdString());
+            emit totalAmountChanged();
+            emit baseAmountChanged();
+            emit relAmountChanged();
         }
     }
 
@@ -1027,39 +1005,17 @@ namespace atomic_dex
     void
     trading_page::determine_error_cases()
     {
-        TradingError current_trading_error = TradingError::None;
-
-        //! Check minimal trading amount
-        const std::string base                     = this->get_market_pairs_mdl()->get_base_selected_coin().toStdString();
-        t_float_50        max_balance_without_dust = this->get_max_balance_without_dust();
-
-        if (max_balance_without_dust < utils::minimal_trade_amount()) //<! Checking balance < minimal_trading_amount
-        {
-            current_trading_error = TradingError::BalanceIsLessThanTheMinimalTradingAmount;
-        }
-        else if (m_volume.isEmpty()) ///< Volume is not set correctly
-        {
-            current_trading_error = TradingError::VolumeFieldNotFilled;
-        }
-        else if (m_price.isEmpty() || m_price == "0") ///< Price is not set correctly
-        {
-            current_trading_error = TradingError::PriceFieldNotFilled; ///< need to have for multi ticker check
-        }
-        else if (safe_float(get_base_amount().toStdString()) < utils::minimal_trade_amount())
-        {
-            current_trading_error = TradingError::VolumeIsLowerThanTheMinimum;
-        }
-        else if (safe_float(get_rel_amount().toStdString()) < utils::minimal_trade_amount())
-        {
-            current_trading_error = TradingError::ReceiveVolumeIsLowerThanTheMinimum; ///< need to have for multi ticker check
-        }
-        else
-        {
-            if (!get_fees().empty())
-            {
-                current_trading_error = generate_fees_error(get_fees(), max_balance_without_dust);
-            }
-        }
+        trading_infos cfg{
+            .max_balance_without_dust = this->get_max_balance_without_dust(),
+            .volume                   = m_volume,
+            .price                    = m_price,
+            .base_amount              = safe_float(get_base_amount().toStdString()),
+            .rel_amount               = safe_float(get_rel_amount().toStdString()),
+            .fees                     = get_fees(),
+            .system_manager           = m_system_manager,
+            .is_selected_order        = m_preffered_order.has_value(),
+            .current_trading_mode     = m_current_trading_mode};
+        TradingError current_trading_error = determine_trading_error(cfg);
 
         //! Check for base coin
         this->set_trading_error(current_trading_error);
@@ -1157,48 +1113,6 @@ namespace atomic_dex
         }
 
         return t_float_50(0);
-    }
-
-    TradingError
-    trading_page::generate_fees_error(QVariantMap fees, t_float_50 max_balance_without_dust) const
-    {
-        TradingError last_trading_error = TradingError::None;
-        const auto&  mm2                = m_system_manager.get_system<mm2_service>();
-        const auto   is_selected_order  = m_preffered_order.has_value();
-
-        //! Check taker fee only if it's a selected order
-        if (is_selected_order && safe_float(fees["trading_fee"].toString().toStdString()) > max_balance_without_dust)
-        {
-            last_trading_error = TradingError::TradingFeesNotEnoughFunds; ///< need to have for multi ticker check
-        }
-        //! Check base transaction fees, we do not need to check if it's a selected order, every order even maker_order need to pay transaction fees
-        else if (!mm2.do_i_have_enough_funds(
-                     fees["base_transaction_fees_ticker"].toString().toStdString(), safe_float(fees["base_transaction_fees"].toString().toStdString())))
-        {
-            last_trading_error = TradingError::BaseTransactionFeesNotEnough; ///< need to have for multi ticker check
-        }
-        else if (fees.contains("rel_transaction_fees_ticker")) //! Checking rel coin if specific fees aka: ETH, QTUM, QRC-20, ERC-20 ?
-        {
-            const auto rel_ticker = fees["rel_transaction_fees_ticker"].toString().toStdString();
-            t_float_50 rel_amount = safe_float(fees["rel_transaction_fees"].toString().toStdString());
-            if (not mm2.do_i_have_enough_funds(rel_ticker, rel_amount))
-            {
-                last_trading_error = TradingError::RelTransactionFeesNotEnough; ///< need to have for multi ticker check
-            }
-        }
-        else
-        {
-            for (auto&& cur: fees["total_fees"].toJsonArray())
-            {
-                auto&& cur_obj = cur.toObject();
-                if (!mm2.do_i_have_enough_funds(cur_obj["coin"].toString().toStdString(), safe_float(fees["amount"].toString().toStdString())))
-                {
-                    last_trading_error = TradingError::TotalFeesNotEnoughFunds;
-                    break;
-                }
-            }
-        }
-        return last_trading_error;
     }
 
     bool
@@ -1314,10 +1228,12 @@ namespace atomic_dex
             t_float_50  target_price =
                 (m_market_mode == MarketMode::Sell) ? t_float_50(cex_price + (cex_price * percent)) : t_float_50(cex_price - (cex_price * percent));
 
-            //t_float_50 price_diff = t_float_50(100) * (t_float_50(1) - (target_price / cex_price)) * ((m_market_mode == MarketMode::Sell) ? t_float_50(1) : t_float_50(-1));
-            //t_float_50 reversed_price_diff = t_float_50(100) * (t_float_50(1) - ((1 / target_price) / (1 / cex_price))) * ((m_market_mode == MarketMode::Sell) ? t_float_50(1) : t_float_50(-1));
-            //SPDLOG_INFO("cex price: {}, target_price: {}, price_diff: {}", utils::format_float(cex_price), utils::format_float(target_price), utils::format_float(price_diff));
-            //SPDLOG_INFO("reversed_cex price: {}, reversed_target_price: {}, reversed_price_diff: {}", utils::format_float(1 / cex_price), utils::format_float(1 / target_price), utils::format_float(reversed_price_diff));
+            // t_float_50 price_diff = t_float_50(100) * (t_float_50(1) - (target_price / cex_price)) * ((m_market_mode == MarketMode::Sell) ? t_float_50(1) :
+            // t_float_50(-1)); t_float_50 reversed_price_diff = t_float_50(100) * (t_float_50(1) - ((1 / target_price) / (1 / cex_price))) * ((m_market_mode ==
+            // MarketMode::Sell) ? t_float_50(1) : t_float_50(-1)); SPDLOG_INFO("cex price: {}, target_price: {}, price_diff: {}",
+            // utils::format_float(cex_price), utils::format_float(target_price), utils::format_float(price_diff)); SPDLOG_INFO("reversed_cex price: {},
+            // reversed_target_price: {}, reversed_price_diff: {}", utils::format_float(1 / cex_price), utils::format_float(1 / target_price),
+            // utils::format_float(reversed_price_diff));
             this->set_price(QString::fromStdString(utils::format_float(target_price)));
             if (m_market_mode == MarketMode::Buy)
             {

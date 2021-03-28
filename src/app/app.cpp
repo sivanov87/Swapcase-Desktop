@@ -309,6 +309,7 @@ namespace atomic_dex
         system_manager_.create_system<exporter_service>(system_manager_);
         system_manager_.create_system<trading_page>(
             system_manager_, m_event_actions.at(events_action::about_to_exit_app), portfolio_system.get_portfolio(), this);
+        system_manager_.create_system<simple_trading_page>(system_manager_, this);
 
         connect_signals();
         if (qt_wallet_manager::is_there_a_default_wallet())
@@ -615,6 +616,14 @@ namespace atomic_dex
     application::get_trading_page() const
     {
         trading_page* ptr = const_cast<trading_page*>(std::addressof(system_manager_.get_system<trading_page>()));
+        assert(ptr != nullptr);
+        return ptr;
+    }
+
+    simple_trading_page*
+    application::get_simple_trading_page() const
+    {
+        simple_trading_page* ptr = const_cast<simple_trading_page*>(std::addressof(system_manager_.get_system<simple_trading_page>()));
         assert(ptr != nullptr);
         return ptr;
     }
