@@ -774,7 +774,7 @@ namespace atomic_dex
     {
         if (m_current_trading_mode != trading_mode)
         {
-            // this->clear_forms();
+            this->clear_forms();
             this->set_market_mode(MarketMode::Sell);
             m_current_trading_mode = trading_mode;
             SPDLOG_INFO("new trading mode: {}", QMetaEnum::fromType<TradingMode>().valueToKey(trading_mode));
