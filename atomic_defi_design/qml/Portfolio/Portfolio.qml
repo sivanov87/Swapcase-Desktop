@@ -181,8 +181,6 @@ Item {
                                     resetCoinFilter()
                                 else
                                     text = ""
-
-                                //applyCurrentSort()
                             }
 
                             Layout.alignment: Qt.AlignVCenter
@@ -201,9 +199,9 @@ Item {
                 }
             }
             TableDex {
-                height: isUltraLarge? flick.height>1300? flick.height-(80+600+30+10)
+                height: isUltraLarge? flick.height>1300? flick.height-(600+120)
                 : 500
-                : flick.height>1000? flick.height-(80+350+30+10) : 500
+                : flick.height>1000? flick.height-(350+120) : 500
             }
             Item {
                 width: 1
