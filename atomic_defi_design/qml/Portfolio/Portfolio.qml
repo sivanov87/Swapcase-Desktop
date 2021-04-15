@@ -243,7 +243,6 @@ Item {
                                 source: Qaterial.Icons.plus
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-
                             DexLabel {
                                 text: qsTr("Add asset")
                                 anchors.verticalCenter: parent.verticalCenter

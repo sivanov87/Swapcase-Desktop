@@ -5,7 +5,7 @@ import QtGraphicalEffects 1.0
 import Qt.labs.settings 1.0
 
 
-import QtQuick.Window 2.15
+import QtQuick.Window 2.12
 
 import Qaterial 1.0 as Qaterial
 
@@ -279,11 +279,141 @@ Rectangle {
             }
         }
     }
+    Window {
+        visible: debug_log
+        width: 500
+        height: 400
+        InnerBackground {
+            anchors.fill: parent
+        }
+
+
+        DefaultFlickable {
+            anchors.fill: parent
+            contentHeight:  ccol.height
+            Column {
+                id: ccol
+                width: parent.width
+
+
+                padding: 10
+                RowLayout {
+                    width: parent.width-40
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: 10
+                    height: 20
+                    DefaultText {
+                        text: "Font Density"
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.preferredWidth: 200
+                    }
+                    DefaultSlider {
+                        onValueChanged: {
+                            _font.fontDensity = value
+                            console.log(value)
+                        }
+
+                        to: 3.0
+                        live: true
+                        from: 0.5
+                        stepSize: 0.25
+                        value: 1.0
+                        snapMode: Slider.SnapOnRelease
+                        Layout.fillWidth: true
+                    }
+                }
+                spacing: 25
+                RowLayout {
+                    width: parent.width-40
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: 10
+                    height: 20
+                    DefaultText {
+                        text: "Font "
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.preferredWidth: 200
+                    }
+                    DefaultComboBox {
+                        onCurrentTextChanged: {
+                            _font.fontFamily = currentText
+                        }
+                        model: ["Ubuntu", "Roboto", "Arial","Source Code pro", "Comic Sans Ms"]
+
+                        Layout.fillWidth: true
+                    }
+                }
+                Repeater {
+                    model: global_theme_property
+                    RowLayout {
+                        width: parent.width-40
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 10
+                        height: 30
+                        DefaultText {
+                            text: modelData
+                            Layout.alignment: Qt.AlignVCenter
+                            Layout.preferredWidth: 200
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                            height: 30
+                            DefaultTextField{
+                                anchors.fill: parent
+                                text: eval("theme."+modelData)
+                                Keys.onReturnPressed:  {
+                                   eval("theme."+modelData+" = text")
+                                }
+                                Rectangle {
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.rightMargin: 10
+                                    width: 18
+                                    height: 18
+                                    border.color: 'white'
+                                    color: eval("theme."+modelData)
+                                    radius: 50
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            parent.color = eval(Qaterial.Clipboard.text)
+                                            eval("theme."+modelData+" = "+Qaterial.Clipboard.text)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                RowLayout {
+                    width: parent.width-40
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: 5
+                    height: 50
+                    DefaultText {
+                        text: ""
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.preferredWidth: 200
+                        Layout.fillWidth: true
+                    }
+                    DefaultButton {
+                        text: "Save Current"
+                        onClicked: {
+                            Qaterial.DialogManager.openTextField({title: "Theme Register", text: "themeName",standardButtons: Dialog.Save | Dialog.Cancel, onAccepted: function(text){
+                                save_currentTheme(text)
+                            }})
+                        }
+
+                    }
+                }
+
+            }
+        }
+    }
     Settings {
         id: atomic_settings2
         fileName: atomic_cfg_file
     }
-
     Component.onCompleted: {
         openFirstLaunch()
         console.log(JSON.stringify(API.qt_utilities.get_themes_list()))
@@ -426,6 +556,22 @@ Rectangle {
 
 
 
+        function setQaterialStyle() {
+            Qaterial.Style.accentColorLight = Style.colorTheme4
+            Qaterial.Style.accentColorDark = Style.colorTheme4
+        }
+
+        Component.onCompleted: {
+            //setQaterialStyle()
+        }
+
+        onDark_themeChanged: setQaterialStyle()
+
+
+        readonly property string listItemPrefix:  " ⚬   "
+        readonly property string successCharacter:  "✓"
+        readonly property string failureCharacter:  "✘"
+        readonly property string warningCharacter:  "⚠"
 
         readonly property int animationDuration: 125
 
@@ -473,6 +619,19 @@ Rectangle {
 
         property bool dark_theme: true
 
+
+        function applyOpacity(hex, opacity="00") {
+            return "#" + opacity + hex.substr(hex.length - 6)
+        }
+
+        function colorOnlyIf(condition, color) {
+            return applyOpacity(color, condition ? "FF" : "00")
+        }
+
+        readonly property string colorQtThemeAccent: colorGreen
+        readonly property string colorQtThemeForeground: colorWhite1
+        readonly property string colorQtThemeBackground: colorTheme9
+
         readonly property string sidebar_atomicdex_logo: dark_theme ? "dex-logo-sidebar.png" : "dex-logo-sidebar-dark.png"
         readonly property string colorRed: dark_theme ? "#D13990" : "#9a1165" // Light is 15% darker than Red2, same with the green set
         readonly property string colorRed2:  dark_theme ? "#b61477" : "#b61477"
@@ -517,6 +676,7 @@ Rectangle {
         readonly property string colorThemeDark:  dark_theme ? "#26282C" : "#26282C"
         readonly property string colorThemeDark2:  dark_theme ? "#3C4150" : "#E6E8ED"
         readonly property string colorThemeDark3:  dark_theme ? "#78808D" : "#78808D"
+        //readonly property string colorThemeDarkLight:  dark_theme ? "#78808D" : "#456078"
 
         readonly property string colorRectangle:  dark_theme ? colorTheme7 : colorTheme7
         readonly property string colorInnerBackground:  dark_theme ? colorTheme7 : colorTheme7
@@ -525,6 +685,10 @@ Rectangle {
         readonly property string colorGradient2:  dark_theme ? colorTheme5 : colorTheme5
         readonly property string colorGradient3:  dark_theme ? "#24283D" : "#24283D"
         readonly property string colorGradient4:  dark_theme ? "#0D0F21" : "#0D0F21"
+        //readonly property string colorLineGradient1:  dark_theme ? "#2c2f3c" : "#EEF1F7"
+        //readonly property string colorLineGradient2:  dark_theme ? "#06070c" : "#DCE1E8"
+        //readonly property string colorLineGradient3:  dark_theme ? "#090910" : "#EEF1F7"
+        //readonly property string colorLineGradient4:  dark_theme ? "#24283b" : "#DCE1E8"
         readonly property string colorDropShadowLight:  dark_theme ? "#216975a4" : "#21FFFFFF"
         readonly property string colorDropShadowLight2:  dark_theme ? "#606975a4" : "#60FFFFFF"
         readonly property string colorDropShadowDark:  dark_theme ? "#FF050615" : "#BECDE2"
@@ -549,6 +713,7 @@ Rectangle {
         readonly property string colorSidebarHighlightGradient2:  dark_theme ? "#BA1B5E7D" : "#AD7faaf0"
         readonly property string colorSidebarHighlightGradient3:  dark_theme ? "#5F1B5E7D" : "#A06dc9f3"
         readonly property string colorSidebarHighlightGradient4:  dark_theme ? "#001B5E7D" : "#006bcef4"
+        //readonly property string colorSidebarDropShadow:  dark_theme ? "#90000000" : "#BECDE2"
         readonly property string colorSidebarSelectedText:  dark_theme ? "#FFFFFF" : "#FFFFFF"
 
         readonly property string colorCoinListHighlightGradient:  dark_theme ? "#2C2E40" : "#E0E6F0"
@@ -570,7 +735,36 @@ Rectangle {
         readonly property string colorText: dark_theme ? Style.colorWhite1 : "#405366"
         readonly property string colorText2: dark_theme ? "#79808C" : "#3C5368"
         readonly property string colorTextDisabled: dark_theme ? Style.colorWhite8 : "#B5B9C1"
-
+        readonly property var colorButtonDisabled: ({
+              "default": Style.colorTheme9,
+              "primary": Style.colorGreen3,
+              "danger": Style.colorRed3
+            })
+        readonly property var colorButtonHovered: ({
+              "default": Style.colorTheme6,
+              "primary": Style.colorGreen,
+              "danger": Style.colorRed
+            })
+        readonly property var colorButtonEnabled: ({
+              "default": Style.colorRectangle,
+              "primary": Style.colorGreen2,
+              "danger": Style.colorRed2
+            })
+        readonly property var colorButtonTextDisabled: ({
+              "default": Style.colorWhite8,
+              "primary": Style.colorWhite13,
+              "danger": Style.colorWhite13
+            })
+        readonly property var colorButtonTextHovered: ({
+              "default": Style.colorText,
+              "primary": Style.colorWhite11,
+              "danger": Style.colorWhite11
+            })
+        readonly property var colorButtonTextEnabled: ({
+              "default": Style.colorText,
+              "primary": Style.colorWhite11,
+              "danger": Style.colorWhite11
+            })
         readonly property string colorPlaceholderText: Style.colorWhite9
         readonly property string colorSelectedText: Style.colorTheme9
         readonly property string colorSelection: Style.colorGreen2
