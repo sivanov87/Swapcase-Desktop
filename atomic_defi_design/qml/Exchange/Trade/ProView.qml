@@ -520,7 +520,7 @@ ColumnLayout {
                     expandedVert: true
                     hideHeader: true
                     title: "Form"
-                    minimumHeight: 350
+                    minimumHeight: 300
                     ColumnLayout {
                         property int space: 10
                         anchors.fill: parent
@@ -634,7 +634,7 @@ ColumnLayout {
                     SplitView.fillWidth: true
                     SplitView.fillHeight: true
                     defaultHeight: 250
-                    minimumHeight: 100
+                    minimumHeight: 130
                     //clip: true
                     //smooth: true
                     title: "Best Orders"
