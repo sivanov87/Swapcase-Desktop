@@ -116,10 +116,12 @@ Item {
 
 
     Flickable {
+        id: flick
         anchors.fill: parent
         anchors.topMargin: 90
         contentHeight: _column.height
         clip: true
+        onHeightChanged: console.log(height)
         Column {
             id: _column
             topPadding: 10
@@ -199,6 +201,9 @@ Item {
                 }
             }
             TableDex {
+                height: isUltraLarge? flick.height>1300? flick.height-(80+600+30+10)
+                : 500
+                : flick.height>1000? flick.height-(80+350+30+10) : 500
             }
             Item {
                 width: 1
