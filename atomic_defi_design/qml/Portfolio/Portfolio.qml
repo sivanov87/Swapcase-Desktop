@@ -236,10 +236,12 @@ Item {
                             spacing: 10
                             Qaterial.ColorIcon {
                                 source: Qaterial.Icons.plus
+                                anchors.verticalCenter: parent.verticalCenter
                             }
 
                             DexLabel {
                                 text: qsTr("Add asset")
+                                anchors.verticalCenter: parent.verticalCenter
                             }
                         }
                         onClicked: enable_coin_modal.open()
