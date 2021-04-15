@@ -199,9 +199,6 @@ Item {
                 }
             }
             TableDex {
-                height: isUltraLarge? flick.height>1300? flick.height-(600+120)
-                : 500
-                : flick.height>1000? flick.height-(350+120) : 500
             }
             Item {
                 width: 1
