@@ -2094,22 +2094,22 @@
 <context>
     <name>Portfolio</name>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="190"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="192"/>
         <source>Search</source>
         <translation>Rechercher</translation>
     </message>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="169"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="171"/>
         <source>Show only coins with balance</source>
         <translation>Afficher uniquement les assets avec solde</translation>
     </message>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="224"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="229"/>
         <source>Portfolio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="242"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="248"/>
         <source>Add asset</source>
         <translation type="unfinished"></translation>
     </message>
