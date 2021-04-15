@@ -21,15 +21,23 @@ Qaterial.ApplicationWindow {
     flags: Qt.Window | Qt.WindowFullscreenButtonHint
 
     property int real_visibility
-
     Component.onCompleted: showMaximized()
-
     onVisibilityChanged: {
         // 3 is minimized, ignore that
         if(visibility !== 3)
             real_visibility = visibility
 
         API.app.change_state(visibility)
+
+
+    }
+
+    background: Item{}
+    Rectangle {
+        anchors.fill: parent
+        color: "transparent"
+        border.color: app.globalTheme.dexBoxBackgroundColor
+        border.width: 0
     }
 
     App {
