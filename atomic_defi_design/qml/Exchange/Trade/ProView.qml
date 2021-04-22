@@ -248,20 +248,7 @@ ColumnLayout {
                                 color: theme.dexBoxBackgroundColor
                             }
                             onCurrentIndexChanged: {
-                                swipeView.pop()
-                                switch (currentIndex) {
-                                case 0:
-                                    swipeView.push(priceLine)
-                                    break
-                                case 1:
-                                    swipeView.push(order_component)
-                                    break
-                                case 2:
-                                    swipeView.push(history_component)
-                                    break
-                                default:
-                                    priceLine
-                                }
+                                swipeView.currentIndex = currentIndex
                             }
 
                             y: 5
@@ -287,36 +274,30 @@ ColumnLayout {
                         }
                         Item {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            //radius: 4
                             width: parent.width
                             height: parent.height - (tabView.height + 40)
-                            //verticalShadow: false
-                            StackView {
+                            SwipeView {
                                 id: swipeView
 
-                                initialItem: priceLine
+                                
                                 anchors.fill: parent
-
-                                LoaderBusyIndicator {
-                                    visible: swipeView.busy
-                                }
-                                Component {
-                                    id: priceLine
+                                Item {
                                     PriceLine {
                                         id: price_line_obj
+                                        anchors.fill: parent
                                     }
                                 }
-                                Component {
-                                    id: order_component
+                                Item {
                                     OrdersView.OrdersPage {
                                         clip: true
+                                        anchors.fill: parent
                                     }
                                 }
-                                Component {
-                                    id: history_component
+                                Item {
                                     OrdersView.OrdersPage {
                                         is_history: true
                                         clip: true
+                                        anchors.fill: parent
                                     }
                                 }
                             }
