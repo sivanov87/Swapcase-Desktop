@@ -2,8 +2,7 @@ import QtQuick 2.15
 import Qaterial 1.0 as Qaterial
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
-import "../Exchange/Trade/"
-import "../Constants/" as Constants
+
 
 InnerBackground {
     id: _control
@@ -30,6 +29,7 @@ InnerBackground {
     property bool contentVisible: !hidden
 
     property bool isVertical: _control.parent.parent.orientation === Qt.Vertical
+
     function setHeight(height) {
         SplitView.preferredHeight = height
     }
@@ -42,6 +42,7 @@ InnerBackground {
             SplitView.preferredHeight = 40
             SplitView.minimumHeight = 40
             SplitView.maximumHeight = 40
+            expandedVert = false
         }
         else if(isVertical && !hidden){
             SplitView.preferredHeight = defaultHeight
@@ -54,18 +55,17 @@ InnerBackground {
             SplitView.preferredWidth = 40
             SplitView.minimumWidth = 40
             SplitView.maximumWidth = 40
+            expandedHort = false
         }
         else if(!isVertical && !hidden){
             SplitView.preferredWidth = defaultWidth
             SplitView.minimumWidth = minimumWidth
             SplitView.maximumWidth = maximumWidth
-            console.log(_control.maximumWidth)
             SplitView.fillWidth = true
 
         }
     }
 
-    //shadowOff: true
     color: theme.dexBoxBackgroundColor
     property alias titleLabel: _texto
 
@@ -75,42 +75,47 @@ InnerBackground {
             console.log(_control.parent.parent.currentIndex)
         }
     }
+    function setFalseHeight() {
+        SplitView.fillHeight = false
+    }
 
     onExpandedVertChanged: {
+        let splitManager = SplitView.view
         if(expandedVert) {
-            if(DefaultSplitView.view!=null){
-                for(var i=0; i< DefaultSplitView.view.children.length;i++){
-                    if (DefaultSplitView.view.children[i]!==_control){
+            if(splitManager!==null){
+                for(var i=0; i< splitManager.itemLists.length;i++){
+                     let item =splitManager.itemLists[i]
+                    if (item!==_control){
                         try{
-                            DefaultSplitView.view.children[i].expandedVert = false
+                            item.expandedVert = false
+                            item.setFalseHeight()
                         }catch(e){}
-
                     }
                 }
                 SplitView.fillHeight = true
             }
-        } else {
-            SplitView.fillHeight = false
         }
     }
+
+    function setFalseWidth() {
+        SplitView.fillWidth= false
+    }
+
     onExpandedHortChanged: {
+        let splitManager = SplitView.view
         if(expandedHort) {
-            if(DefaultSplitView.view!=null){
-                for(var i=0; i<SplitView.view.children.length;i++) {
-                    if (SplitView.view.children[i]!==_control){
-                        try{
-                            SplitView.view.children[i].expandedHort = false
-                        }catch(e){}
+            if(splitManager==null){
+                for(var i=0; i<splitManager.itemLists.length;i++) {
+                    let item =splitManager.itemLists[i]
+                    if (item!==_control){
+                        item.expandedHort = false
+                        item.setFalseWidth()
                     }
                 }
-                SplitView.fillHeight = true
+                SplitView.fillWidth = true
             }
-        }else {
-            SplitView.fillHeight = false
         }
     }
-
-
 
     Behavior on SplitView.preferredHeight {
         SmoothedAnimation {
@@ -140,9 +145,9 @@ InnerBackground {
     property Component contentItem
 
     radius: 8
-    ClipRRect {
+    Item {
         anchors.fill: parent
-        radius: parent.radius
+        //radius: parent.radius
         Rectangle {
             width: parent.width
             height: 40
@@ -153,7 +158,8 @@ InnerBackground {
                 anchors.fill: parent
                 Layout.rightMargin: 10
                 Layout.leftMargin: 10
-                DefaultText {
+                visible: !_control.hideHeader
+                Label {
                     id: _texto
                     leftPadding: 10
                     Layout.alignment: Qt.AlignVCenter
@@ -205,7 +211,7 @@ InnerBackground {
                         icon.height: 17
                         icon.width: 17
                         foregroundColor: theme.foregroundColor
-                        visible: _control.expandable && _control.parent.parent.orientation === Qt.Vertical
+                        visible: (_control.expandable && !hidden) && _control.parent.parent.orientation === Qt.Vertical
                         icon.source: _control.expandedVert? Qaterial.Icons.unfoldLessHorizontal : Qaterial.Icons.unfoldMoreHorizontal
                         onClicked: _control.expandedVert =!_control.expandedVert
                     }
@@ -215,7 +221,7 @@ InnerBackground {
                         icon.height: 17
                         icon.width: 17
                         foregroundColor: theme.foregroundColor
-                        visible: _control.expandable && _control.parent.parent.orientation === Qt.Horizontal
+                        visible: (_control.expandable && !hidden) && _control.parent.parent.orientation === Qt.Horizontal
                         icon.source: _control.expandedHort? Qaterial.Icons.unfoldLessVertical : Qaterial.Icons.unfoldMoreVertical
                         onClicked: _control.expandedHort =!_control.expandedHort
                     }
@@ -247,7 +253,7 @@ InnerBackground {
             radius: parent.parent.height<41? parent.parent.radius : 0
             color: theme.dexBoxBackgroundColor
             visible: !isVertical && hidden
-            DefaultText {
+            Label {
                 id: _texto2
                 leftPadding: 10
                 Layout.alignment: Qt.AlignVCenter
@@ -283,7 +289,7 @@ InnerBackground {
                         icon.height: 17
                         icon.width: 17
                         foregroundColor: theme.foregroundColor
-                        visible: _control.expandable && _control.parent.parent.orientation === Qt.Vertical
+                        visible: (_control.expandable && !hidden) && _control.parent.parent.orientation === Qt.Vertical
                         icon.source: _control.expandedVert? Qaterial.Icons.unfoldLessHorizontal : Qaterial.Icons.unfoldMoreHorizontal
                         onClicked: _control.expandedVert =!_control.expandedVert
                     }
@@ -293,7 +299,7 @@ InnerBackground {
                         icon.height: 17
                         icon.width: 17
                         foregroundColor: theme.foregroundColor
-                        visible: _control.expandable && _control.parent.parent.orientation === Qt.Horizontal
+                        visible: (_control.expandable && !hidden) && _control.parent.parent.orientation === Qt.Horizontal
                         icon.source: _control.expandedHort? Qaterial.Icons.unfoldLessVertical : Qaterial.Icons.unfoldMoreVertical
                         onClicked: _control.expandedHort =!_control.expandedHort
                     }
@@ -321,7 +327,7 @@ InnerBackground {
                 }
             }
         }
-        Item {
+        ClipRRect {
             anchors.fill: parent
             visible: contentVisible
             Loader {
@@ -331,11 +337,9 @@ InnerBackground {
 
                 sourceComponent: _control.contentItem
             }
-            LoaderBusyIndicator {
-                target: _loader
+            BusyIndicator {
+                running: false
             }
         }
-
-
     }
 }

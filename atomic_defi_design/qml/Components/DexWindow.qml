@@ -8,5 +8,8 @@ import "../Constants"
 
 ApplicationWindow {
     id: window
+    signal resized()
+    onWidthChanged: resized()
+    onHeightChanged: resized()
     flags: Qt.FramelessWindowHint | Qt.Window
 }

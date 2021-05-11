@@ -87,11 +87,11 @@ ColumnLayout {
     anchors.leftMargin: 10
     anchors.fill: parent
 
-    SplitView {
+    DexBoxManager {
         id: splitView
         Layout.fillWidth: true
         Layout.fillHeight: true
-
+        itemLists: [left_section,orderBox_best,sellFormBox]
         spacing: 15
         handle: Item {
             implicitWidth: 10
@@ -113,12 +113,21 @@ ColumnLayout {
             title: "Chart View"
             color: 'transparent'
             border.color: 'transparent'
-            SplitView {
+            DexBoxManager {
                 anchors.fill: parent
                 anchors.margins: 00
                 anchors.topMargin: 0
                 anchors.rightMargin: 0
                 orientation: Qt.Vertical
+                Connections  {
+                    target: window
+                    function onResized() {
+                        if(!isUltraLarge){
+                            optionBox.hidden = false
+                        }
+                    }
+                }
+                itemLists: [chart_box, horizontalOrderBookBox,optionBox]
                 handle: Item {
                     implicitWidth: 10
                     implicitHeight: 10
@@ -130,6 +139,7 @@ ColumnLayout {
                     }
                 }
                 ItemBox {
+                    id: chart_box
                     title: "Chart View"
                     expandedVert: true
                     Item {
@@ -147,7 +157,6 @@ ColumnLayout {
                     spacing: 20
                     SplitView.maximumHeight: 80
                     SplitView.minimumHeight: 75
-
                     TickerSelector {
                         id: selector_left
                         left_side: true
@@ -187,16 +196,7 @@ ColumnLayout {
                     }
                 }
                 ItemBox {
-                    title: "Multi-Order"
-                    defaultHeight: 250
-                    visible: false
-                    //                        MultiOrder {
-                    //                            anchors.topMargin: 40
-                    //                            anchors.fill: parent
-                    //                        }
-                }
-
-                ItemBox {
+                    id: horizontalOrderBookBox
                     title: "OrderBook"
                     defaultHeight: 300
                     Behavior on defaultHeight {
@@ -310,18 +310,21 @@ ColumnLayout {
         }
 
         ItemBox {
+            id: orderBox_best
             minimumWidth: 350
             maximumWidth: 380
             defaultWidth: 350
             title: "OrderBook & Best Orders"
             color: 'transparent'
+            expandable: false
             closable: false
             visible: isUltraLarge
-            DefaultSplitView {
+            DexBoxManager {
                 anchors.topMargin: 40
                 anchors.fill: parent
                 orientation: Qt.Vertical
                 visible: parent.contentVisible
+                itemLists: [orderBookBox,_best_order_box]
                 handle: Item {
                     implicitWidth: 10
                     implicitHeight: 10
@@ -338,8 +341,8 @@ ColumnLayout {
                     SplitView.fillWidth: true
                 }
                 ItemBox {
+                    id: orderBookBox
                     SplitView.fillWidth: true
-                    //clip: true
                     title: "OrderBook"
                     expandedVert: true
 
@@ -361,8 +364,6 @@ ColumnLayout {
                     SplitView.fillHeight: true
                     defaultHeight: 250
                     minimumHeight: 130
-                    //clip: true
-                    //smooth: true
                     title: "Best Orders"
                     reloadable: true
                     onReload: {
@@ -387,19 +388,21 @@ ColumnLayout {
         }
 
         ItemBox {
+            id: sellFormBox
             defaultWidth: 380
             maximumWidth: 380
             minimumWidth: 350
             SplitView.fillHeight: true
             title: "Buy & Sell"
             color: 'transparent'
+            expandable: false
             border.color: 'transparent'
-            //clip: true
-            SplitView {
+            DexBoxManager {
                 visible: parent.contentVisible
                 orientation: Qt.Vertical
                 anchors.fill: parent
                 anchors.topMargin: 45
+                itemLists: [totalBox, bestOrderBox]
                 handle: Item {
                     implicitWidth: 10
                     implicitHeight: 10
@@ -411,10 +414,10 @@ ColumnLayout {
                     }
                 }
                 ItemBox {
+                    id: totalBox
                     title: "Total"
                     defaultHeight: 90
                     hideHeader: true
-                    //clip: true
                     visible: true
                     bottomBorderColor: sell_mode? theme.greenColor : theme.redColor
                     TotalView {}
@@ -500,6 +503,7 @@ ColumnLayout {
                     }
                 }
                 ItemBox {
+                    id: bestOrderBox
                     expandedVert: true
                     hideHeader: true
                     title: "Form"
