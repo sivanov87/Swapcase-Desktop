@@ -106,19 +106,22 @@ namespace atomic_dex
             auto& mm2 = this->m_system_manager.get_system<mm2_service>();
             mm2.get_mm2_client()
                 .async_rpc_batch_standalone(batch)
-                .then([]([[maybe_unused]] web::http::http_response resp) {
-                    std::string body = TO_STD_STR(resp.extract_string(true).get());
-                    SPDLOG_INFO("status_code: {}", resp.status_code());
-                    if (resp.status_code() == 200)
+                .then(
+                    []([[maybe_unused]] web::http::http_response resp)
                     {
-                        SPDLOG_INFO("order resp: {}", body);
-                    }
-                    else
-                    {
-                        SPDLOG_WARN("An error occured during setprice: {}", body);
-                    }
-                })
-                .then(&handle_exception_pplx_task);
+                        std::string body = TO_STD_STR(resp.extract_string(true).get());
+                        SPDLOG_INFO("status_code: {}", resp.status_code());
+                        if (resp.status_code() == 200)
+                        {
+                            SPDLOG_INFO("order resp: {}", body);
+                        }
+                        else
+                        {
+                            SPDLOG_WARN("An error occured during setprice: {}", body);
+                        }
+                    })
+                .then([setprice_json](pplx::task<void> previous_task)
+                      { handle_exception_pplx_task(previous_task, fmt::format("auto_update_maker_order_service::update_order: {}", setprice_json.dump(4))); });
         }
     }
 

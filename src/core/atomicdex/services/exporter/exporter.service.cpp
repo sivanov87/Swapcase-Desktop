@@ -72,7 +72,8 @@ namespace atomic_dex
         to_json(my_recent_swaps, request);
         batch.push_back(my_recent_swaps);
 
-        auto answer_functor = [csv_path](web::http::http_response resp) {
+        auto answer_functor = [csv_path](web::http::http_response resp)
+        {
             auto       answers     = ::mm2::api::basic_batch_answer(resp);
             const auto swap_answer = ::mm2::api::rpc_process_answer_batch<t_my_recent_swaps_answer>(answers[0], "my_recent_swaps");
             if (swap_answer.result.has_value())
@@ -111,6 +112,7 @@ namespace atomic_dex
             }
         };
 
-        mm2.get_mm2_client().async_rpc_batch_standalone(batch).then(answer_functor).then(&handle_exception_pplx_task);
+        auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, std::nullopt); };
+        mm2.get_mm2_client().async_rpc_batch_standalone(batch).then(answer_functor).then(error_functor);
     }
 } // namespace atomic_dex

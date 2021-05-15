@@ -355,7 +355,8 @@ namespace atomic_dex
             this->set_custom_token_data(nlohmann_json_object_to_qt_json_object(out));
             this->set_fetching_custom_token_data_busy(false);
         };
-        ::mm2::api::async_process_rpc_get(::mm2::api::g_qtum_proxy_http_client, "qrc_infos", url).then(answer_functor).then(&handle_exception_pplx_task);
+        auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, std::nullopt); };
+        ::mm2::api::async_process_rpc_get(::mm2::api::g_qtum_proxy_http_client, "qrc_infos", url).then(answer_functor).then(error_functor);
     }
 
     void
@@ -447,7 +448,8 @@ namespace atomic_dex
             this->set_custom_token_data(nlohmann_json_object_to_qt_json_object(out));
             this->set_fetching_custom_token_data_busy(false);
         };
-        ::mm2::api::async_process_rpc_get(*endpoint, "token_infos", url).then(answer_functor).then(&handle_exception_pplx_task);
+        auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, std::nullopt); };
+        ::mm2::api::async_process_rpc_get(*endpoint, "token_infos", url).then(answer_functor).then(error_functor);
     }
 
     bool

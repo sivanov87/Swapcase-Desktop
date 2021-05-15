@@ -259,14 +259,14 @@ namespace atomic_dex
                                : false;
         t_float_50 base_min_trade = safe_float(get_orderbook_wrapper()->get_base_min_taker_vol().toStdString());
         t_float_50 cur_min_trade  = safe_float(get_min_trade_vol().toStdString());
-        //t_float_50 delta          = (cur_min_trade * 100) / safe_float(m_max_volume.toStdString());
-        //t_float_50 delta_cur      = (cur_min_trade * 100) / safe_float(m_volume.toStdString());
-        // SPDLOG_INFO("delta min_vol compare to max volume is: {}", utils::format_float(delta));
-        // SPDLOG_INFO("delta min_vol compare to current volume is: {}", utils::format_float(delta_cur));
-        // SPDLOG_INFO("base: {} base_min_vol: {}", base_resp.coin, base_resp.min_trading_vol);
-        //SPDLOG_INFO("rel: {} rel_min_vol: {}", rel_resp.coin, rel_resp.min_trading_vol);
-        //SPDLOG_INFO("cur_min_trade {}", cur_min_trade.str());
-        //SPDLOG_INFO("base_min_trade {}", base_min_trade.str());
+        // t_float_50 delta          = (cur_min_trade * 100) / safe_float(m_max_volume.toStdString());
+        // t_float_50 delta_cur      = (cur_min_trade * 100) / safe_float(m_volume.toStdString());
+        //  SPDLOG_INFO("delta min_vol compare to max volume is: {}", utils::format_float(delta));
+        //  SPDLOG_INFO("delta min_vol compare to current volume is: {}", utils::format_float(delta_cur));
+        //  SPDLOG_INFO("base: {} base_min_vol: {}", base_resp.coin, base_resp.min_trading_vol);
+        // SPDLOG_INFO("rel: {} rel_min_vol: {}", rel_resp.coin, rel_resp.min_trading_vol);
+        // SPDLOG_INFO("cur_min_trade {}", cur_min_trade.str());
+        // SPDLOG_INFO("base_min_trade {}", base_min_trade.str());
         SPDLOG_INFO("min_trade_amount_field {}", m_minimal_trading_amount.toStdString());
 
         t_sell_request req{
@@ -1047,6 +1047,7 @@ namespace atomic_dex
         ::mm2::api::to_json(preimage_request, req);
         // SPDLOG_INFO("request: {}", preimage_request.dump(4));
         batch.push_back(preimage_request);
+        preimage_request["userpass"] = "";
 
         this->set_preimage_busy(true);
         auto answer_functor = [this, &mm2](web::http::http_response resp)
@@ -1095,7 +1096,9 @@ namespace atomic_dex
             }
             this->set_preimage_busy(false);
         };
-        mm2.get_mm2_client().async_rpc_batch_standalone(batch).then(answer_functor).then(&handle_exception_pplx_task);
+        auto error_functor = [&preimage_request](pplx::task<void> previous_task)
+        { handle_exception_pplx_task(previous_task, fmt::format("determine_fees: {}", preimage_request.dump(4))); };
+        mm2.get_mm2_client().async_rpc_batch_standalone(batch).then(answer_functor).then(error_functor);
     }
 
     void

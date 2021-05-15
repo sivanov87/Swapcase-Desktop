@@ -52,6 +52,7 @@ namespace atomic_dex
     band_oracle_price_service::fetch_oracle() 
     {
         SPDLOG_INFO("start fetching oracle");
+        auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, "band fetch_oracle"); };
         async_fetch_oracle_result()
             .then([this](web::http::http_response resp) {
                 auto body = TO_STD_STR(resp.extract_string(true).get());
@@ -80,7 +81,7 @@ namespace atomic_dex
                     SPDLOG_ERROR("Cannot fetch oracle price: {}", body);
                 }
             })
-            .then(&handle_exception_pplx_task);
+            .then(error_functor);
     }
 } // namespace atomic_dex
 

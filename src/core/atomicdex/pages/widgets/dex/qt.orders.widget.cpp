@@ -16,6 +16,7 @@
 
 //! Deps
 #include <nlohmann/json.hpp>
+#include <utility>
 
 //! Project Headers
 #include "../../qt.settings.page.hpp"
@@ -59,15 +60,23 @@ namespace atomic_dex
         }
 
         batch.push_back(cancel_request);
+        auto error_functor = [batch](pplx::task<void> previous_task)
+        {
+            nlohmann::json request = batch;
+            for (auto& cur: request) { cur["userpass"] = ""; }
+            handle_exception_pplx_task(std::move(previous_task), fmt::format("common_cancel_all_orders: {}", request.dump(4)));
+        };
         auto& mm2_system = m_system_mgr.get_system<mm2_service>();
         mm2_system.get_mm2_client()
             .async_rpc_batch_standalone(batch)
-            .then([this]([[maybe_unused]] web::http::http_response resp) {
-                auto& mm2_system = m_system_mgr.get_system<mm2_service>();
-                mm2_system.batch_fetch_orders_and_swap();
-                mm2_system.process_orderbook(false);
-            })
-            .then(&handle_exception_pplx_task);
+            .then(
+                [this]([[maybe_unused]] web::http::http_response resp)
+                {
+                    auto& mm2_system = m_system_mgr.get_system<mm2_service>();
+                    mm2_system.batch_fetch_orders_and_swap();
+                    mm2_system.process_orderbook(false);
+                })
+            .then(error_functor);
     }
 } // namespace atomic_dex
 
@@ -88,15 +97,23 @@ namespace atomic_dex
             batch.push_back(cancel_request);
         }
 
+        auto error_functor = [batch](pplx::task<void> previous_task)
+        {
+          nlohmann::json request = batch;
+          for (auto& cur: request) { cur["userpass"] = ""; }
+          handle_exception_pplx_task(std::move(previous_task), fmt::format("common_cancel_all_orders: {}", request.dump(4)));
+        };
         auto& mm2_system = m_system_mgr.get_system<mm2_service>();
         mm2_system.get_mm2_client()
             .async_rpc_batch_standalone(batch)
-            .then([this]([[maybe_unused]] web::http::http_response resp) {
-                auto& mm2_system = m_system_mgr.get_system<mm2_service>();
-                mm2_system.batch_fetch_orders_and_swap();
-                mm2_system.process_orderbook(false);
-            })
-            .then(&handle_exception_pplx_task);
+            .then(
+                [this]([[maybe_unused]] web::http::http_response resp)
+                {
+                    auto& mm2_system = m_system_mgr.get_system<mm2_service>();
+                    mm2_system.batch_fetch_orders_and_swap();
+                    mm2_system.process_orderbook(false);
+                })
+            .then(error_functor);
     }
 
     void

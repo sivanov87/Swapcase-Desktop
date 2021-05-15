@@ -101,14 +101,14 @@ namespace atomic_dex
     void
     update_service_checker::fetch_update_status() 
     {
-        SPDLOG_DEBUG("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
-        SPDLOG_INFO("fetching update status");
+        SPDLOG_DEBUG("fetch_update_status");
         async_check_retrieve()
             .then([this](web::http::http_response resp) {
                 this->m_update_status = get_update_status_rpc(resp);
                 emit updateStatusChanged();
             })
-            .then(&handle_exception_pplx_task);
+            .then([](pplx::task<void> previous_task)
+                  { handle_exception_pplx_task(previous_task, "https://komodo.live/adexproversion"); });
     }
 
     QVariant

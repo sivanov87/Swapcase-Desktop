@@ -94,6 +94,7 @@ namespace atomic_dex
         SPDLOG_INFO("refresh_other_coins_rates");
         using namespace std::chrono_literals;
         coinpaprika::api::price_converter_request request{.base_currency_id = "usd-us-dollars", .quote_currency_id = quote_id};
+        auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, std::nullopt); };
         coinpaprika::api::async_price_converter(request)
             .then(
                 [this, quote_id, ticker, with_update_providers](web::http::http_response resp)
@@ -125,7 +126,7 @@ namespace atomic_dex
                         this->m_system_manager.get_system<coingecko_provider>().update_ticker_and_provider();
                     }
                 })
-            .then(&handle_exception_pplx_task);
+            .then(error_functor);
     }
 
     global_price_service::global_price_service(entt::registry& registry, ag::ecs::system_manager& system_manager, atomic_dex::cfg& cfg) :
@@ -188,8 +189,15 @@ namespace atomic_dex
             //! We use oracle
             if (is_this_currency_a_fiat(m_cfg, fiat) && fiat != "USD")
             {
-                t_float_50 tmp_current_price = t_float_50(current_price) * m_other_fiats_rates->at("rates").at(fiat).get<double>();
-                current_price                = tmp_current_price.str();
+                if (m_other_fiats_rates->empty() || m_other_fiats_rates->size() == 0)
+                {
+                    SPDLOG_ERROR("other fiat rates not ready - skipping");
+                }
+                else
+                {
+                    t_float_50 tmp_current_price = t_float_50(current_price) * m_other_fiats_rates->at("rates").at(fiat).get<double>();
+                    current_price                = tmp_current_price.str();
+                }
             }
 
             else if (!is_this_currency_a_fiat(m_cfg, fiat) && is_oracle_ready)
@@ -390,6 +398,7 @@ namespace atomic_dex
     global_price_service::on_force_update_providers([[maybe_unused]] const force_update_providers& evt)
     {
         SPDLOG_INFO("Forcing update providers");
+        auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, "on_force_update_providers"); };
         async_fetch_fiat_rates()
             .then(
                 [this](web::http::http_response resp)
@@ -413,7 +422,7 @@ namespace atomic_dex
                         refresh_other_coins_rates(third_id, "BTC", with_update);
                     }
                 })
-            .then(&handle_exception_pplx_task);
+            .then(error_functor);
     }
 
     std::string

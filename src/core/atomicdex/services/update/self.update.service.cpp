@@ -1,14 +1,14 @@
 //! Std
 #include <algorithm>
-#include <cctype>    //> std::isdigit
+#include <cctype> //> std::isdigit
 #include <cstdlib>
 
 //! Qt
 #include <QApplication> //> qApp
+#include <QFile>
+#include <QIODevice>
 #include <QJsonObject>
 #include <QProcess>
-#include <QIODevice>
-#include <QFile>
 
 //! System
 #if defined(Q_OS_LINUX)
@@ -20,11 +20,11 @@
 #include <antara/gaming/core/real.path.hpp>
 
 //! Project
-#include "atomicdex/utilities/global.utilities.hpp"     //> utils::u8string()
+#include "atomicdex/api/checksum/checksum.api.hpp"
 #include "atomicdex/utilities/cpprestsdk.utilities.hpp" //> download_file()
+#include "atomicdex/utilities/global.utilities.hpp"     //> utils::u8string()
 #include "atomicdex/utilities/qt.utilities.hpp"         //> to_sha256()
 #include "atomicdex/version/version.hpp"                //> get_version()
-#include "atomicdex/api/checksum/checksum.api.hpp"
 #include "self.update.service.hpp"
 
 namespace atomic_dex
@@ -61,19 +61,25 @@ namespace atomic_dex
         {
             return;
         }
-        
+
         auto releases_request = github_api::repository_releases_request{.owner = DEX_REPOSITORY_OWNER, .repository = DEX_REPOSITORY_NAME};
         github_api::get_repository_releases_async(releases_request)
-            .then([this](web::http::http_response resp) {
-                if (resp.status_code() == 200)
+            .then(
+                [this](web::http::http_response resp)
                 {
-                    auto last_release = github_api::get_last_repository_release_from_http_response(resp);
-                    m_last_release_info = last_release;
-                    emit last_release_tag_nameChanged();
-                    emit update_neededChanged();
-                }
-            })
-            .then(&handle_exception_pplx_task);
+                    if (resp.status_code() == 200)
+                    {
+                        auto last_release   = github_api::get_last_repository_release_from_http_response(resp);
+                        m_last_release_info = last_release;
+                        emit last_release_tag_nameChanged();
+                        emit update_neededChanged();
+                    }
+                })
+            .then(
+                [releases_request](pplx::task<void> previous_task)
+                {
+                    handle_exception_pplx_task(previous_task, fmt::format("github_api::get_repository_releases_async: {}/{}", releases_request.owner, releases_request.repository));
+                });
     }
 
     void
@@ -98,14 +104,15 @@ namespace atomic_dex
         {
             QFile       file{QString::fromStdString(m_download_mgr.get_last_download_path().string())};
             std::string hashed;
-    
+
             file.open(QIODevice::ReadOnly);
             hashed = sha256_qstring_from_qt_byte_array(file.readAll()).toStdString();
             file.close();
-    
+
             checksum::api::get_latest_checksum()
-                .then([this, hashed](std::string valid_hash)
-                      {
+                .then(
+                    [this, hashed](std::string valid_hash)
+                    {
                         if (hashed != valid_hash)
                         {
                             m_update_ready = false;
@@ -119,19 +126,20 @@ namespace atomic_dex
                         {
                             m_update_files_invalid = false;
                         }
-                      }).wait();
+                    })
+                .wait();
             if (m_update_files_invalid)
             {
                 return;
             }
         }
-        
+
         const auto&                  cmd      = qApp->arguments()[0];
         [[maybe_unused]] const auto& args     = qApp->arguments();
         [[maybe_unused]] const auto& dir_path = qApp->applicationDirPath();
         qApp->quit();
         bool res = false;
-    
+
         // Installs update for MacOS.
 #if defined(Q_OS_MACOS)
         try
@@ -140,26 +148,26 @@ namespace atomic_dex
             const auto image_mount_cmd =
                 fmt::format("hdiutil attach -mountpoint {} {}", image_mount_path.c_str(), m_download_mgr.get_last_download_path().c_str());
             const auto image_unmount_cmd = fmt::format("hdiutil detach {}", image_mount_path.c_str());
-        
+
             //! Mounting
             SPDLOG_INFO("Executing: {}", image_mount_cmd);
             std::system(image_mount_cmd.c_str());
-        
+
             //! Retrieve App path
             fs::path app_path = ag::core::binary_real_path().parent_path().parent_path().parent_path();
-        
+
             //! Deleting old
             SPDLOG_INFO("Deleting: {}", app_path.c_str());
             fs::remove_all(app_path);
-        
+
             //! Copying
             SPDLOG_INFO("Copying: {} to {}", (image_mount_path / (std::string(DEX_PROJECT_NAME) + ".app")).c_str(), app_path.c_str());
             fs::copy(image_mount_path / (std::string(DEX_PROJECT_NAME) + ".app"), app_path, fs::copy_options::recursive);
-        
+
             //! Unmount
             SPDLOG_INFO("Executing: {}", image_unmount_cmd);
             std::system(image_unmount_cmd.c_str());
-        
+
             //! DL download tmp path
             SPDLOG_INFO("Removing: {}", m_download_mgr.get_last_download_path().c_str());
             fs::remove(m_download_mgr.get_last_download_path());
@@ -172,58 +180,60 @@ namespace atomic_dex
         res = QProcess::startDetached(cmd, args, dir_path);
 #elif defined(Q_OS_LINUX)
         try
+        {
+            const char* appimage{nullptr};
+            if (appimage = std::getenv("APPIMAGE"); appimage != nullptr)
             {
-                const char* appimage{nullptr};
-                if (appimage = std::getenv("APPIMAGE"); appimage != nullptr)
-                {
-                    SPDLOG_INFO("APPIMAGE path is {}", appimage);
-                }
-                if (appimage == nullptr || not QString(appimage).contains(DEX_PROJECT_NAME))
-                {
-                    SPDLOG_INFO("Need to handle zip");
-                }
-                else
-                {
-                    SPDLOG_INFO("Need to handle appimage");
-    
-                    SPDLOG_INFO("Changing rights of the downloaded appimage");
-                    char mode[] = "0755";
-                    int  i;
-                    i = strtol(mode, 0, 8);
-                    chmod(m_download_mgr.get_last_download_path().c_str(), i);
-    
-                    //! Download old appimage
-                    SPDLOG_INFO("Removing old appimage: {}", appimage);
-                    fs::remove(appimage);
-    
-                    SPDLOG_INFO("Copying new appimage: {} to {}", m_download_mgr.get_last_download_path().c_str(), fs::path(appimage).parent_path().c_str());
-                    fs::copy(m_download_mgr.get_last_download_path(), fs::path(appimage).parent_path());
-    
-                    SPDLOG_INFO("Removing: {}", m_download_mgr.get_last_download_path().c_str());
-                    fs::remove(m_download_mgr.get_last_download_path());
-    
-                    auto    release_info = m_last_release_info.get();
-                    QString path((fs::path(appimage).parent_path() / release_info.name).c_str());
-    
-                    SPDLOG_INFO("Starting: {}", path.toStdString());
-                    QProcess::startDetached(path, qApp->arguments());
-                }
+                SPDLOG_INFO("APPIMAGE path is {}", appimage);
             }
-            catch (const std::exception& error)
+            if (appimage == nullptr || not QString(appimage).contains(DEX_PROJECT_NAME))
             {
-                SPDLOG_ERROR("{}", error.what());
+                SPDLOG_INFO("Need to handle zip");
             }
+            else
+            {
+                SPDLOG_INFO("Need to handle appimage");
+
+                SPDLOG_INFO("Changing rights of the downloaded appimage");
+                char mode[] = "0755";
+                int  i;
+                i = strtol(mode, 0, 8);
+                chmod(m_download_mgr.get_last_download_path().c_str(), i);
+
+                //! Download old appimage
+                SPDLOG_INFO("Removing old appimage: {}", appimage);
+                fs::remove(appimage);
+
+                SPDLOG_INFO("Copying new appimage: {} to {}", m_download_mgr.get_last_download_path().c_str(), fs::path(appimage).parent_path().c_str());
+                fs::copy(m_download_mgr.get_last_download_path(), fs::path(appimage).parent_path());
+
+                SPDLOG_INFO("Removing: {}", m_download_mgr.get_last_download_path().c_str());
+                fs::remove(m_download_mgr.get_last_download_path());
+
+                auto    release_info = m_last_release_info.get();
+                QString path((fs::path(appimage).parent_path() / release_info.name).c_str());
+
+                SPDLOG_INFO("Starting: {}", path.toStdString());
+                QProcess::startDetached(path, qApp->arguments());
+            }
+        }
+        catch (const std::exception& error)
+        {
+            SPDLOG_ERROR("{}", error.what());
+        }
 #elif defined(Q_OS_WIN)
         try
         {
-            const auto binary_path = antara::gaming::core::binary_real_path();
+            const auto binary_path            = antara::gaming::core::binary_real_path();
             const auto current_install_folder = binary_path.parent_path();
-            const auto unzip_cmd = fmt::format("powershell.exe -nologo -noprofile -command \"Expand-Archive -Path {} -DestinationPath {} -Force\"",
-                                               m_download_mgr.get_last_download_path().string(), current_install_folder.string());
-    
-            for (const auto& file : fs::recursive_directory_iterator(current_install_folder))
+            const auto unzip_cmd              = fmt::format(
+                "powershell.exe -nologo -noprofile -command \"Expand-Archive -Path {} -DestinationPath {} -Force\"",
+                m_download_mgr.get_last_download_path().string(), current_install_folder.string());
+
+            for (const auto& file: fs::recursive_directory_iterator(current_install_folder))
             {
-                if (file.path().extension() == ".dll" || file.path().extension() == ".exe" || file.path().extension() == ".qmlc" || file.path().extension() == ".jsc")
+                if (file.path().extension() == ".dll" || file.path().extension() == ".exe" || file.path().extension() == ".qmlc" ||
+                    file.path().extension() == ".jsc")
                 {
                     fs::rename(file.path(), file.path().string() + ".old");
                 }
@@ -236,7 +246,7 @@ namespace atomic_dex
             SPDLOG_ERROR(ex.what());
         }
 #endif
-    
+
         // Restarts application.
         if (!res)
         {
@@ -269,14 +279,15 @@ namespace atomic_dex
             return false;
         }
     }
-    
+
     bool
     self_update_service::is_update_downloading() const noexcept
     {
         return m_update_downloading;
     }
-    
-    float self_update_service::get_update_download_progress() const noexcept
+
+    float
+    self_update_service::get_update_download_progress() const noexcept
     {
         return m_update_download_progress;
     }
@@ -286,13 +297,15 @@ namespace atomic_dex
     {
         return m_update_ready.get();
     }
-    
-    bool self_update_service::are_update_files_invalid() const noexcept
+
+    bool
+    self_update_service::are_update_files_invalid() const noexcept
     {
         return m_update_files_invalid;
     }
-    
-    void self_update_service::on_download_release_progressed(qt_download_progressed download_progressed)
+
+    void
+    self_update_service::on_download_release_progressed(qt_download_progressed download_progressed)
     {
         m_update_download_progress = download_progressed.progress;
         emit updateDownloadProgressChanged();
@@ -307,12 +320,13 @@ namespace atomic_dex
         m_update_ready = true;
         emit update_readyChanged();
     }
-    
-    void self_update_service::remove_update_files() const noexcept
+
+    void
+    self_update_service::remove_update_files() const noexcept
     {
         const auto current_install_folder = antara::gaming::core::binary_real_path().parent_path();
-        
-        for (auto file : fs::recursive_directory_iterator(current_install_folder))
+
+        for (auto file: fs::recursive_directory_iterator(current_install_folder))
         {
             if (file.path().extension().string() == ".old")
             {

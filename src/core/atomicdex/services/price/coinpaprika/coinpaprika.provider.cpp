@@ -107,6 +107,7 @@ namespace atomic_dex
         const TRequest& request, std::string ticker, std::shared_mutex& mtx, std::unordered_map<std::string, TAnswer>& container, TExecutorFunctor&& functor,
         Args... args)
     {
+        auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, std::nullopt); };
         const auto answer_functor = [this, &mtx, &container, functor = std::forward<TExecutorFunctor>(functor), request, ticker = std::move(ticker),
                                      ... args = std::move(args)](web::http::http_response resp) mutable {
             const auto answer = process_generic_resp<TAnswer>(resp);
@@ -121,7 +122,7 @@ namespace atomic_dex
             }
         };
 
-        functor(request).then(answer_functor).then(&handle_exception_pplx_task);
+        functor(request).then(answer_functor).then(error_functor);
     }
 } // namespace atomic_dex
 

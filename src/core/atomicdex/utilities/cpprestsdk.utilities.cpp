@@ -40,7 +40,7 @@ create_json_post_request(nlohmann::json&& json_data)
 }
 
 void
-handle_exception_pplx_task(pplx::task<void> previous_task)
+handle_exception_pplx_task(pplx::task<void> previous_task, std::optional<std::string> from)
 {
     try
     {
@@ -48,9 +48,13 @@ handle_exception_pplx_task(pplx::task<void> previous_task)
     }
     catch (const std::exception& e)
     {
+        if (from.has_value())
+        {
+            SPDLOG_ERROR("error request from: {}", from.value());
+        }
         SPDLOG_ERROR("pplx task error: {}", e.what());
-#if defined(linux) || defined(__APPLE__)
-        SPDLOG_ERROR("stacktrace: {}", boost::stacktrace::to_string(boost::stacktrace::stacktrace()));
-#endif
+//#if defined(linux) || defined(__APPLE__)
+        //SPDLOG_ERROR("stacktrace: {}", boost::stacktrace::to_string(boost::stacktrace::stacktrace()));
+//#endif
     }
 }
