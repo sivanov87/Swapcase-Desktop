@@ -440,6 +440,14 @@ namespace atomic_dex
     {
         if (fiat == "USD")
             return true;
-        return m_other_fiats_rates->empty() || m_other_fiats_rates->size() == 0 || m_other_fiats_rates->count(fiat) > 0;
+        auto rates = m_other_fiats_rates.get();
+        return !rates.empty() && rates.contains("rates") && rates.at("rates").contains(fiat);
+    }
+    bool
+    global_price_service::is_currency_available(const std::string& currency) const
+    {
+        bool available = true;
+        available = m_coin_rate_providers.find(currency) != m_coin_rate_providers.end();
+        return available;
     }
 } // namespace atomic_dex

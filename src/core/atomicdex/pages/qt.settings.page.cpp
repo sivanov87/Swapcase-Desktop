@@ -156,7 +156,26 @@ namespace atomic_dex
     void
     settings_page::set_current_currency(const QString& current_currency)
     {
-        if (current_currency.toStdString() != m_config.current_currency)
+        bool        can_proceed = true;
+        std::string reason      = "";
+        if (atomic_dex::is_this_currency_a_fiat(m_config, current_currency.toStdString()))
+        {
+            if (!m_system_manager.get_system<global_price_service>().is_fiat_available(current_currency.toStdString()))
+            {
+                can_proceed = false;
+                reason      = "rate for fiat: " + current_currency.toStdString() + " not available";
+            }
+        }
+        else
+        {
+            if (!m_system_manager.get_system<global_price_service>().is_currency_available(current_currency.toStdString()))
+            {
+                can_proceed = false;
+                reason      = "rate for currency " + current_currency.toStdString() + " not available";
+            }
+        }
+
+        if (current_currency.toStdString() != m_config.current_currency && can_proceed)
         {
             SPDLOG_INFO("change currency {} to {}", m_config.current_currency, current_currency.toStdString());
             atomic_dex::change_currency(m_config, current_currency.toStdString());
@@ -167,6 +186,10 @@ namespace atomic_dex
             emit onCurrencyChanged();
             emit onCurrencySignChanged();
             emit onFiatSignChanged();
+        }
+        else
+        {
+            SPDLOG_ERROR("cannot change currency for reason: {}", reason);
         }
     }
 
