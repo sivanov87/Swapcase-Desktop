@@ -141,7 +141,7 @@ namespace atomic_dex
                     }
                     QJsonArray trend = nlohmann_json_array_to_qt_json_array(coingecko.get_ticker_historical(ticker));
                     update_value(Trend7D, trend, idx, *this);
-                    // SPDLOG_DEBUG("updated currency values of: {}", ticker);
+                    SPDLOG_DEBUG("updated currency values of: {}", ticker);
                 }
             };
             taskflow.emplace(update_functor);

@@ -23,7 +23,13 @@
 
 namespace
 {
-    t_http_client_ptr g_openrates_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR("https://api.openrates.io"));
+    web::http::client::http_client_config g_openrates_cfg{[]() {
+      web::http::client::http_client_config cfg;
+      cfg.set_validate_certificates(false);
+      cfg.set_timeout(std::chrono::seconds(5));
+      return cfg;
+    }()};
+    t_http_client_ptr g_openrates_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR("https://api.openrates.io"), g_openrates_cfg);
 
     pplx::task<web::http::http_response>
     async_fetch_fiat_rates()
@@ -97,10 +103,23 @@ namespace atomic_dex
     void
     global_price_service::refresh_other_coins_rates(const std::string& quote_id, const std::string& ticker, bool with_update_providers)
     {
-        SPDLOG_INFO("refresh_other_coins_rates");
+        SPDLOG_INFO("refresh_other_coins_rates: {} {}", quote_id, ticker);
         using namespace std::chrono_literals;
         coinpaprika::api::price_converter_request request{.base_currency_id = "usd-us-dollars", .quote_currency_id = quote_id};
-        auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, std::nullopt); };
+        auto error_functor = [this, quote_id, ticker, with_update_providers](pplx::task<void> previous_task) {
+          try
+          {
+              previous_task.wait();
+          }
+          catch (const std::exception& e)
+          {
+              SPDLOG_ERROR("error request from: {}", "refresh_other_coins_rates");
+              SPDLOG_ERROR("pplx task error: {}", e.what());
+              SPDLOG_ERROR("waitng 1s and retrying the request for refresh_other_coins_rates");
+              std::this_thread::sleep_for(1s);
+              this->refresh_other_coins_rates(quote_id, ticker, with_update_providers);
+          }
+        };
         coinpaprika::api::async_price_converter(request)
             .then(
                 [this, quote_id, ticker, with_update_providers](web::http::http_response resp)
@@ -108,8 +127,9 @@ namespace atomic_dex
                     auto answer = coinpaprika::api::process_generic_resp<t_price_converter_answer>(resp);
                     if (answer.rpc_result_code == static_cast<web::http::status_code>(antara::app::http_code::too_many_requests))
                     {
+                        SPDLOG_WARN("Too many request, waiting 1s and retry (coingecko async price converter)");
                         std::this_thread::sleep_for(1s);
-                        this->refresh_other_coins_rates(quote_id, ticker);
+                        this->refresh_other_coins_rates(quote_id, ticker, with_update_providers);
                     }
                     else
                     {
@@ -118,12 +138,14 @@ namespace atomic_dex
                             if (not answer.price.empty())
                             {
                                 std::unique_lock lock(m_coin_rate_mutex);
+                                SPDLOG_INFO("updating rates of: {} with price: {}", ticker, answer.price);
                                 this->m_coin_rate_providers[ticker] = answer.price;
                             }
                         }
                         else
                         {
                             std::unique_lock lock(m_coin_rate_mutex);
+                            SPDLOG_WARN("Setting rates of: {} with default 0 price", ticker);
                             this->m_coin_rate_providers[ticker] = "0.00";
                         }
                     }
@@ -166,6 +188,10 @@ namespace atomic_dex
         //! FIXME: fix zatJum crash report, frontend QML try to retrieve price before program is even launched
         if (ticker.empty())
             return "0";
+        if (fiat == ticker)
+        {
+            return "1";
+        }
         auto&       coingecko       = m_system_manager.get_system<coingecko_provider>();
         auto&       band_service    = m_system_manager.get_system<band_oracle_price_service>();
         std::string current_price   = band_service.retrieve_if_this_ticker_supported(ticker);
@@ -404,7 +430,21 @@ namespace atomic_dex
     global_price_service::on_force_update_providers([[maybe_unused]] const force_update_providers& evt)
     {
         SPDLOG_INFO("Forcing update providers");
-        auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, "on_force_update_providers"); };
+        auto error_functor = [this, evt](pplx::task<void> previous_task) {
+          try
+          {
+              previous_task.wait();
+          }
+          catch (const std::exception& e)
+          {
+              SPDLOG_ERROR("error request from: {}", "on_force_update_providers");
+              SPDLOG_ERROR("pplx task error: {}", e.what());
+              SPDLOG_ERROR("waitng 1s and retrying the request for on_force_update_providers");
+              std::this_thread::sleep_for(1s);
+              this->on_force_update_providers(evt);
+          }
+        };
+        //auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, "on_force_update_providers"); };
         async_fetch_fiat_rates()
             .then(
                 [this](web::http::http_response resp)
