@@ -31,11 +31,11 @@ namespace
         web::http::http_request req;
         req.set_method(web::http::methods::GET);
         req.set_request_uri(FROM_STD_STR("/latest?base=USD"));
-        auto headers = req.headers();
+        /*auto headers = req.headers();
         for (auto&& header : headers)
         {
             SPDLOG_INFO("header: {} {}", TO_STD_STR(header.first), TO_STD_STR(header.second));
-        }
+        }*/
         //SPDLOG_INFO("req: {}", TO_STD_STR());
         return g_openrates_client->request(req);
     }

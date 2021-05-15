@@ -6,7 +6,7 @@
 #include "atomicdex/api/github/github.api.hpp"
 #include "atomicdex/version/version.hpp"
 
-TEST_CASE("Fetch last GitHub release and compare with current")
+TEST_CASE("Fetch last GitHub release and compa²re with current")
 {
     auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, std::nullopt); };
     atomic_dex::github_api::repository_releases_request request {.owner = "KomodoPlatform", .repository = "atomicdex-desktop"};
