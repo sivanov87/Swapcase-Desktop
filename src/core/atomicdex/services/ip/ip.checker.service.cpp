@@ -57,6 +57,7 @@ namespace atomic_dex
         using namespace std::chrono_literals;
         m_update_clock = std::chrono::high_resolution_clock::now();
 #if !defined(DISABLE_GEOBLOCKING)
+        auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, std::nullopt); };
         auto ip_validator_functor = [this](std::string ip) {
             async_check_retrieve_ip(g_ip_proxy_client, "/api/v1/ip_infos/" + ip)
                 .then([this, ip](web::http::http_response resp) {
@@ -79,7 +80,7 @@ namespace atomic_dex
                         }
                     }
                 })
-                .then(&handle_exception_pplx_task);
+                .then(error_functor);
         };
         async_check_retrieve_ip(g_ipify_client, "")
             .then([this, ip_validator_functor](web::http::http_response resp) {
