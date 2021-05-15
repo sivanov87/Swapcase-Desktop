@@ -92,7 +92,7 @@ namespace atomic_dex
                     ip_validator_functor(ip);
                 }
             })
-            .then(&handle_exception_pplx_task);
+            .then(error_functor);
 #endif
     }
 } // namespace atomic_dex

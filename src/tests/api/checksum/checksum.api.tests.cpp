@@ -6,6 +6,7 @@
 
 TEST_CASE("Fetch checksum and check its value")
 {
+    auto error_functor = [](pplx::task<void> previous_task) { handle_exception_pplx_task(previous_task, std::nullopt); };
     atomic_dex::checksum::api::get_latest_checksum()
         .then([](std::string checksum)
         {
@@ -19,6 +20,6 @@ TEST_CASE("Fetch checksum and check its value")
 #endif
                  );
         })
-        .then(&handle_exception_pplx_task)
+        .then(error_functor)
         .wait();
 }
