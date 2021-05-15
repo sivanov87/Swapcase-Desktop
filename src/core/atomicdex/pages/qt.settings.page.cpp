@@ -189,7 +189,10 @@ namespace atomic_dex
         }
         else
         {
-            SPDLOG_ERROR("cannot change currency for reason: {}", reason);
+            if (!reason.empty())
+            {
+                SPDLOG_ERROR("cannot change currency for reason: {}", reason);
+            }
         }
     }
 

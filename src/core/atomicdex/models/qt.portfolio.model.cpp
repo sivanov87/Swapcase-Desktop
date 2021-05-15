@@ -146,7 +146,9 @@ namespace atomic_dex
             };
             taskflow.emplace(update_functor);
         }
+        SPDLOG_INFO("waiting for the executor");
         executor.run(taskflow).wait();
+        SPDLOG_INFO("executor done");
         return true;
     }
 

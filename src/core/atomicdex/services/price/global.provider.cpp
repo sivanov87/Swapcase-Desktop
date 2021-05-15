@@ -31,7 +31,12 @@ namespace
         web::http::http_request req;
         req.set_method(web::http::methods::GET);
         req.set_request_uri(FROM_STD_STR("/latest?base=USD"));
-        SPDLOG_INFO("req: {}", TO_STD_STR(req.to_string()));
+        auto headers = req.headers();
+        for (auto&& header : headers)
+        {
+            SPDLOG_INFO("header: {} {}", TO_STD_STR(header.first), TO_STD_STR(header.second));
+        }
+        //SPDLOG_INFO("req: {}", TO_STD_STR());
         return g_openrates_client->request(req);
     }
 
@@ -441,14 +446,14 @@ namespace atomic_dex
         if (fiat == "USD")
             return true;
         auto rates = m_other_fiats_rates.get();
-        SPDLOG_INFO("rates: {}", rates.dump(4));
+        //SPDLOG_INFO("rates: {}", rates.dump(4));
         return !rates.empty() && rates.contains("rates") && rates.at("rates").contains(fiat);
     }
     bool
     global_price_service::is_currency_available(const std::string& currency) const
     {
         bool available = true;
-        SPDLOG_INFO("coin_rate_providers size: {}", m_coin_rate_providers.size());
+        //SPDLOG_INFO("coin_rate_providers size: {}", m_coin_rate_providers.size());
         available = m_coin_rate_providers.find(currency) != m_coin_rate_providers.end();
         return available;
     }
