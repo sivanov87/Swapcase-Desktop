@@ -31,6 +31,7 @@ namespace
         web::http::http_request req;
         req.set_method(web::http::methods::GET);
         req.set_request_uri(FROM_STD_STR("/latest?base=USD"));
+        SPDLOG_INFO("req: {}", TO_STD_STR(req.to_string()));
         return g_openrates_client->request(req);
     }
 
@@ -433,5 +434,12 @@ namespace atomic_dex
             return "1";
         }
         return std::to_string(m_other_fiats_rates->at("rates").at(fiat).get<double>());
+    }
+    bool
+    global_price_service::is_fiat_available(const std::string& fiat) const
+    {
+        if (fiat == "USD")
+            return true;
+        return m_other_fiats_rates->empty() || m_other_fiats_rates->size() == 0 || m_other_fiats_rates->count(fiat) > 0;
     }
 } // namespace atomic_dex
