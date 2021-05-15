@@ -147,7 +147,8 @@ namespace atomic_dex
             taskflow.emplace(update_functor);
         }
         SPDLOG_INFO("waiting for the executor");
-        executor.run(taskflow).wait();
+        using namespace std::chrono_literals;
+        executor.run(taskflow).wait_for(2s);
         SPDLOG_INFO("executor done");
         return true;
     }
