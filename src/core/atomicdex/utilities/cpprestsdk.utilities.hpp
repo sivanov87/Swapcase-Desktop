@@ -16,6 +16,10 @@
 
 #pragma once
 
+//! STD Include
+#include <optional>
+#include <string>
+
 #include <nlohmann/json_fwd.hpp>
 
 #ifndef _TURN_OFF_PLATFORM_STRING
