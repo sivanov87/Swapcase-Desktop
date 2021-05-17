@@ -140,7 +140,7 @@ ColumnLayout {
                 }
                 ItemBox {
                     id: chart_box
-                    title: "Chart View"
+                    title: qsTr("Chart View")
                     expandedVert: true
                     Item {
                         id: chart_view
@@ -196,8 +196,7 @@ ColumnLayout {
                     }
                 }
                 ItemBox {
-                    id: horizontalOrderBookBox
-                    title: "OrderBook"
+                    title: qsTr("OrderBook")
                     defaultHeight: 300
                     Behavior on defaultHeight {
                         NumberAnimation {
@@ -228,7 +227,7 @@ ColumnLayout {
                         }
                     }
 
-                    title: "Options"
+                    title: qsTr("Options")
                     Column {
                         topPadding: 40
                         width: parent.width
@@ -314,7 +313,7 @@ ColumnLayout {
             minimumWidth: 350
             maximumWidth: 380
             defaultWidth: 350
-            title: "OrderBook & Best Orders"
+            title: qsTr("OrderBook & Best Orders")
             color: 'transparent'
             expandable: false
             closable: false
@@ -364,7 +363,7 @@ ColumnLayout {
                     SplitView.fillHeight: true
                     defaultHeight: 250
                     minimumHeight: 130
-                    title: "Best Orders"
+                    title: qsTr("Best Orders")
                     reloadable: true
                     onReload: {
                         API.app.trading_pg.orderbook.refresh_best_orders()
@@ -393,7 +392,7 @@ ColumnLayout {
             maximumWidth: 380
             minimumWidth: 350
             SplitView.fillHeight: true
-            title: "Buy & Sell"
+            title: qsTr("Buy & Sell")
             color: 'transparent'
             expandable: false
             border.color: 'transparent'
@@ -455,7 +454,7 @@ ColumnLayout {
                             DefaultText {
                                 anchors.centerIn: parent
                                 opacity: !sell_mode ? 1 : .5
-                                text: "Buy "+atomic_qt_utilities.retrieve_main_ticker(left_ticker)
+                                text: qsTr("Buy")+" "+atomic_qt_utilities.retrieve_main_ticker(left_ticker)
                                 color: !sell_mode? Qaterial.Colors.white : theme.foregroundColor
                             }
                             DefaultMouseArea {
@@ -490,7 +489,7 @@ ColumnLayout {
                                 anchors.centerIn: parent
 
                                 opacity: sell_mode ? 1 : .5
-                                text: "Sell "+atomic_qt_utilities.retrieve_main_ticker(left_ticker)
+                                text: qsTr("Sell")+" "+atomic_qt_utilities.retrieve_main_ticker(left_ticker)
                                 color: sell_mode? Qaterial.Colors.white : theme.foregroundColor
 
                             }
@@ -622,7 +621,7 @@ ColumnLayout {
                     SplitView.fillHeight: true
                     defaultHeight: 130
                     minimumHeight: 80
-                    title: "Best Orders"
+                    title: qsTr("Best Orders")
                     reloadable: true
                     onReload: {
                         API.app.trading_pg.orderbook.refresh_best_orders()
