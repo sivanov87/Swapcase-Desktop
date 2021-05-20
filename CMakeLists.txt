@@ -70,7 +70,13 @@ else ()
             URL https://github.com/KomodoPlatform/atomicDEX-API/releases/download/beta-2.1.3445/mm2-419f36ef5-Windows_NT-Release.zip)
 endif ()
 
-FetchContent_Declare(qmaterial URL https://github.com/KomodoPlatform/Qaterial/archive/last-clang-working-2.zip)
+#FetchContent_Declare(qmaterial URL https://github.com/KomodoPlatform/Qaterial/archive/last-clang-working-2.zip)
+
+FetchContent_Declare(
+        qmaterial
+        GIT_REPOSITORY https://github.com/KomodoPlatform/Qaterial.git
+        GIT_TAG a5ae919a1e33e4a3c63dab4650c825586b7041c9
+)
 
 FetchContent_Declare(jl777-coins
         URL https://github.com/KomodoPlatform/coins/archive/master.zip)
