@@ -11,6 +11,7 @@ strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep "GLIBCXX"
 sudo apt-get --purge remove gcc-11 g++-11 libstdc++
 strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep "GLIBCXX" 
 sudo apt-get install gcc-10 g++-10
+sudo apt-get install --reinstall libstdc++6 sudo apt-get -f install
 strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep "GLIBCXX" 
 # base deps
 sudo apt-get install build-essential \
