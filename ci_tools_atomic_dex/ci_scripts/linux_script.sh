@@ -8,7 +8,7 @@ sudo ACCEPT_EULA=Y apt-get upgrade -y
 # remove gcc-11
 
 strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep "GLIBCXX" 
-sudo apt-get --purge remove gcc-11 g++-11
+sudo apt-get --purge remove gcc-11 g++-11 libstdc++
 strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep "GLIBCXX" 
 sudo apt-get install gcc-10 g++-10
 strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep "GLIBCXX" 
