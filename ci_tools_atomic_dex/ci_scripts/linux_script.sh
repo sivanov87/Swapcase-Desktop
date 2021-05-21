@@ -8,9 +8,9 @@ sudo ACCEPT_EULA=Y apt-get upgrade -y
 # remove gcc-11
 
 strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep "GLIBCXX" 
-sudo apt-get --purge remove gcc-11
+sudo apt-get --purge remove gcc-11 g++-11
 strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep "GLIBCXX" 
-sudo apt-get install gcc-10
+sudo apt-get install gcc-10 g++-10
 strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep "GLIBCXX" 
 # base deps
 sudo apt-get install build-essential \
@@ -48,6 +48,7 @@ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 777
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 777
 sudo apt-get update
 sudo apt-get install libc++abi-11-dev libc++-11-dev -y
+strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep "GLIBCXX" 
 #export CXXFLAGS=-stdlib=libc++
 #export LDFLAGS=-stdlib=libc++
 export CXX=clang++-12
