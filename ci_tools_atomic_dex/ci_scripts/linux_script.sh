@@ -4,6 +4,10 @@ sudo apt-get update  # prevents repo404 errors on apt-remove below
 sudo apt-get remove php* msodbcsql17 mysql*
 sudo apt-get update
 sudo ACCEPT_EULA=Y apt-get upgrade -y
+
+# remove gcc-11
+sudo apt-get --purge remove gcc-11
+sudo apt-get install gcc-10
 # base deps
 sudo apt-get install build-essential \
                     libgl1-mesa-dev \
