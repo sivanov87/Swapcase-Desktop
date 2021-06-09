@@ -286,7 +286,7 @@ jobs:
       - name: Upload env variable for artifacts (Linux)
         if: runner.os == 'Linux'
         run: |
-          ls ./bundled/linux/
+          ls /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/linux/
           echo "artifact_name_zstd=${{ env.DEX_PROJECT_NAME }}-${{ matrix.name }}-$(git rev-parse --short HEAD).tar.zst" >> $GITHUB_ENV
           echo "artifact_name_zip=${{ env.DEX_PROJECT_NAME }}-${{ matrix.name }}-$(git rev-parse --short HEAD).zip" >> $GITHUB_ENV
           echo "artifact_name_appimage=${{ env.DEX_PROJECT_NAME }}-${{ matrix.name }}-$(git rev-parse --short HEAD)-x86_64.AppImage" >> $GITHUB_ENV
@@ -299,26 +299,26 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.artifact_name_zstd }}
-          path: ./bundled/linux/${{ env.target_name_zstd }}
+          path: /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/linux/${{ env.target_name_zstd }}
 
       - name: Upload bundle artifact (Linux ZIP)
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.artifact_name_zip }}
-          path: ./bundled/linux/${{ env.target_name_zip }}
+          path: /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/linux/${{ env.target_name_zip }}
 
       - name: Upload bundle artifact (Linux AppImage)
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.artifact_name_appimage }}
-          path: ./bundled/linux/${{ env.target_name_appimage }}
+          path: /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/linux/${{ env.target_name_appimage }}
 
       - name: Upload env variable for artifacts (macOS)
         if: runner.os == 'macOS'
         run: |
-          ls ./bundled/osx/
+          ls /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/osx/
           echo "artifact_name_dmg=${{ env.DEX_PROJECT_NAME }}-${{ matrix.name }}-$(git rev-parse --short HEAD).dmg" >> $GITHUB_ENV
           echo "artifact_name_installer=${{ env.DEX_PROJECT_NAME }}-installer-${{ matrix.name }}-$(git rev-parse --short HEAD).7z" >> $GITHUB_ENV
 
@@ -327,14 +327,14 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.artifact_name_dmg }}
-          path: ./bundled/osx/${{ env.DEX_PROJECT_NAME }}.dmg
+          path: /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/osx/${{ env.DEX_PROJECT_NAME }}.dmg
 
       - name: Upload artifacts (MacOS installer)
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.artifact_name_installer }}
-          path: ./bundled/osx/${{ env.DEX_PROJECT_NAME }}_installer.7z
+          path: /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/osx/${{ env.DEX_PROJECT_NAME }}_installer.7z
 
       - name: Upload env variable for artifacts (Windows)
         if: runner.os == 'Windows'
@@ -348,13 +348,13 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.artifact_name_zip }}
-          path: ./bundled/windows/bin.zip
+          path: /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/windows/bin.zip
 
       - name: Upload artifacts (Windows installer)
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.artifact_name_installer }}
-          path: ./bundled/windows/${{ env.DEX_PROJECT_NAME }}_installer.exe
+          path: /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/windows/${{ env.DEX_PROJECT_NAME }}_installer.exe
       
       
