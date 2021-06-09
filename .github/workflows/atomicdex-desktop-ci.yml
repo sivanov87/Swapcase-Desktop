@@ -286,7 +286,8 @@ jobs:
       - name: Upload env variable for artifacts (Linux)
         if: runner.os == 'Linux'
         run: |
-          ls /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/linux/
+          ls ./bundled/linux/
+          echo $cwd
           echo "artifact_name_zstd=${{ env.DEX_PROJECT_NAME }}-${{ matrix.name }}-$(git rev-parse --short HEAD).tar.zst" >> $GITHUB_ENV
           echo "artifact_name_zip=${{ env.DEX_PROJECT_NAME }}-${{ matrix.name }}-$(git rev-parse --short HEAD).zip" >> $GITHUB_ENV
           echo "artifact_name_appimage=${{ env.DEX_PROJECT_NAME }}-${{ matrix.name }}-$(git rev-parse --short HEAD)-x86_64.AppImage" >> $GITHUB_ENV
@@ -318,7 +319,8 @@ jobs:
       - name: Upload env variable for artifacts (macOS)
         if: runner.os == 'macOS'
         run: |
-          ls /Users/runner/work/atomicDEX-Desktop/atomicDEX-Desktop/bundled/osx/
+          ls ./bundled/osx/
+          echo $cwd
           echo "artifact_name_dmg=${{ env.DEX_PROJECT_NAME }}-${{ matrix.name }}-$(git rev-parse --short HEAD).dmg" >> $GITHUB_ENV
           echo "artifact_name_installer=${{ env.DEX_PROJECT_NAME }}-installer-${{ matrix.name }}-$(git rev-parse --short HEAD).7z" >> $GITHUB_ENV
 
