@@ -44,13 +44,13 @@ if (NOT EXISTS ${CMAKE_SOURCE_DIR}/bin/${DEX_PROJECT_NAME}.dmg)
     ##-------------------------------------------
 
     ##-------------------------------------------
-    message(STATUS "Fixing QTWebengineProcess")
-    set(QTWEBENGINE_BUNDLED_PATH ${PROJECT_APP_PATH}/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess)
-    message(STATUS "Executing: [install_name_tool -add_rpath @executable_path/../../../../../../Frameworks ${QTWEBENGINE_BUNDLED_PATH}]")
-    execute_process(COMMAND install_name_tool -add_rpath "@executable_path/../../../../../../Frameworks" "${QTWEBENGINE_BUNDLED_PATH}"
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            ECHO_OUTPUT_VARIABLE
-            ECHO_ERROR_VARIABLE)
+    #message(STATUS "Fixing QTWebengineProcess")
+    #set(QTWEBENGINE_BUNDLED_PATH ${PROJECT_APP_PATH}/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess)
+    #message(STATUS "Executing: [install_name_tool -add_rpath @executable_path/../../../../../../Frameworks ${QTWEBENGINE_BUNDLED_PATH}]")
+    #execute_process(COMMAND install_name_tool -add_rpath "@executable_path/../../../../../../Frameworks" "${QTWEBENGINE_BUNDLED_PATH}"
+    #        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    #        ECHO_OUTPUT_VARIABLE
+    #        ECHO_ERROR_VARIABLE)
 
     execute_process(COMMAND codesign --deep --force -v -s "$ENV{MAC_SIGN_IDENTITY}" -o runtime --timestamp ${PROJECT_APP_PATH}/Contents/Resources/assets/tools/mm2/mm2
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -62,11 +62,11 @@ if (NOT EXISTS ${CMAKE_SOURCE_DIR}/bin/${DEX_PROJECT_NAME}.dmg)
             ECHO_OUTPUT_VARIABLE
             ECHO_ERROR_VARIABLE)
 
-    message(STATUS "Fixing QtWebEngineProcess signature codesign --force --verify --verbose --sign \"$ENV{MAC_SIGN_IDENTITY}\" --entitlements ${PROJECT_ROOT_DIR}/cmake/install/macos/QtWebEngineProcess.entitlements --options runtime --timestamp ${PROJECT_APP_PATH}/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess")
-    execute_process(COMMAND codesign --force --verify --verbose --sign "$ENV{MAC_SIGN_IDENTITY}" --entitlements ${PROJECT_ROOT_DIR}/cmake/install/macos/QtWebEngineProcess.entitlements --options runtime --timestamp ${PROJECT_APP_PATH}/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            ECHO_OUTPUT_VARIABLE
-            ECHO_ERROR_VARIABLE)
+    #message(STATUS "Fixing QtWebEngineProcess signature codesign --force --verify --verbose --sign \"$ENV{MAC_SIGN_IDENTITY}\" --entitlements ${PROJECT_ROOT_DIR}/cmake/install/macos/QtWebEngineProcess.entitlements --options runtime --timestamp ${PROJECT_APP_PATH}/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess")
+    #execute_process(COMMAND codesign --force --verify --verbose --sign "$ENV{MAC_SIGN_IDENTITY}" --entitlements ${PROJECT_ROOT_DIR}/cmake/install/macos/QtWebEngineProcess.entitlements --options runtime --timestamp ${PROJECT_APP_PATH}/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
+    #        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    #        ECHO_OUTPUT_VARIABLE
+    #        ECHO_ERROR_VARIABLE)
 
     ##-------------------------------------------
     message(STATUS "Packaging the DMG")
