@@ -4,7 +4,6 @@ stages:
   - build
   - upload_zip
   - upload_portable
-  - test
   
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
