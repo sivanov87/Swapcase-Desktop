@@ -877,10 +877,10 @@ namespace atomic_dex
         this->dispatcher_.trigger<coin_cfg_parsed>(this->retrieve_coins_informations());
         this->dispatcher_.trigger<force_update_providers>();
 
-        QSettings& settings = m_entity_registry.ctx<QSettings>();
+        QSettings* settings = m_entity_registry.try_ctx<QSettings>();
         mm2_config cfg{.passphrase = std::move(passphrase), .rpc_password = atomic_dex::gen_random_password()};
-        if (settings.contains("NetID") && QString{DEX_NAME} == "SmartDEX") {
-            cfg.netid = settings.value("NetID", 7777).toInt();
+        if (settings != nullptr && settings->contains("NetID") && QString{DEX_NAME} == "SmartDEX") {
+            cfg.netid = settings->value("NetID", 7777).toInt();
         }
         ::mm2::api::set_system_manager(m_system_manager);
         ::mm2::api::set_rpc_password(cfg.rpc_password);
