@@ -214,7 +214,7 @@ Qaterial.Dialog
                                     implicitWidth: 150
                                     implicitHeight: 37
                                     text: atomic_app_name == "SmartDEX" ? atomic_settings2.value("NetID") : ""
-                                    onTextChanged: atomic_settings2.setValue("NetID")
+                                    onTextChanged: atomic_settings2.setValue("NetID", text) 
                                     Layout.alignment: Qt.AlignVCenter
                                 }
                             }
