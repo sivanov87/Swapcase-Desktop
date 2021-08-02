@@ -21,6 +21,7 @@
 #include <QFile>
 #include <QProcess>
 #include <QException>
+#include <QSettings>
 
 //! Project Headers
 #include "atomicdex/api/mm2/mm2.constants.hpp"
@@ -243,7 +244,7 @@ namespace atomic_dex
         return cfg;
     }
 
-    mm2_service::mm2_service(entt::registry& registry, ag::ecs::system_manager& system_manager) : system(registry), m_system_manager(system_manager)
+    mm2_service::mm2_service(entt::registry& registry, ag::ecs::system_manager& system_manager) : system(registry), m_system_manager(system_manager), m_entity_registry(registry)
     {
         m_orderbook_clock = std::chrono::high_resolution_clock::now();
         m_info_clock      = std::chrono::high_resolution_clock::now();
@@ -875,7 +876,12 @@ namespace atomic_dex
         this->m_current_wallet_name = std::move(wallet_name);
         this->dispatcher_.trigger<coin_cfg_parsed>(this->retrieve_coins_informations());
         this->dispatcher_.trigger<force_update_providers>();
+
+        QSettings& settings = m_entity_registry.ctx<QSettings>();
         mm2_config cfg{.passphrase = std::move(passphrase), .rpc_password = atomic_dex::gen_random_password()};
+        if (settings.contains("NetID") && QString{DEX_NAME} == "SmartDEX") {
+            cfg.netid = settings.value("NetID", 7777).toInt();
+        }
         ::mm2::api::set_system_manager(m_system_manager);
         ::mm2::api::set_rpc_password(cfg.rpc_password);
         json       json_cfg;

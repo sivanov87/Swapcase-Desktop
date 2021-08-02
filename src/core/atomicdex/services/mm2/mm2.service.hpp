@@ -81,6 +81,7 @@ namespace atomic_dex
         using t_synchronized_ticker        = boost::synchronized_value<std::string>;
 
         ag::ecs::system_manager& m_system_manager;
+        entt::registry&          m_entity_registry;
 
         //! Client
         // std::shared_ptr<t_http_client>  m_mm2_client{nullptr};
@@ -88,7 +89,7 @@ namespace atomic_dex
         mm2_client m_mm2_client;
 
         //! Process
-        //reproc::process m_mm2_instance;
+        // reproc::process m_mm2_instance;
 
         //! Current ticker
         t_synchronized_ticker m_current_ticker{g_primary_dex_coin};

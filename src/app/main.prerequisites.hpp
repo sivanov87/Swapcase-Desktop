@@ -333,6 +333,10 @@ handle_settings(QSettings& settings)
     create_settings_functor("MaximumNbCoinsEnabled", 50);
     create_settings_functor("DefaultTradingMode", TradingMode::Simple);
     create_settings_functor("FontMode", QQuickWindow::TextRenderType::QtTextRendering);
+    if (QString{DEX_NAME} == "SmartDEX")
+    {
+        create_settings_functor("NetID", 7777);
+    }
 }
 
 inline int
