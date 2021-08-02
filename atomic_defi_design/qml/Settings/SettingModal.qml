@@ -209,13 +209,42 @@ Qaterial.Dialog
                                     Layout.fillWidth: true
                                     text: qsTr("")
                                 }
-                                DexTextField {
+                                DexAppTextField {
                                     id: netIdField
                                     implicitWidth: 150
                                     implicitHeight: 37
-                                    text: atomic_app_name == "SmartDEX" ? atomic_settings2.value("NetID") : ""
-                                    onTextChanged: atomic_settings2.setValue("NetID", text) 
+                                    field.text: atomic_app_name == "SmartDEX" ? atomic_settings2.value("NetID") : ""
+                                    field.onTextChanged: {
+                                        if(field.text !== atomic_settings2.value("NetID")) {
+                                            saveNetIdButton.visible = true
+                                        }
+                                        else {
+                                            saveNetIdButton.visible = false
+                                        }
+                                        
+                                    }
+
                                     Layout.alignment: Qt.AlignVCenter
+                                }
+                                DexAppButton {
+                                    id: saveNetIdButton
+                                    visible: false
+                                    implicitHeight: 37
+                                    text: qsTr("Save")
+                                    onClicked: {
+                                        atomic_settings2.setValue("NetID", netIdField.field.text)
+                                        saveNetIdButton.visible = false
+                                        app.showText({
+                                            title: qsTr("Restart") + " %1".arg(atomic_app_name),
+                                            text: qsTr("This setting will become active after restarting the wallet"),
+                                            standardButtons: Dialog.Yes | Dialog.Cancel,
+                                            yesButtonText: qsTr("Restart"),
+                                            cancelButtonText: qsTr("Cancel"),
+                                            onAccepted: function() {
+                                                restart_modal.open()
+                                            }
+                                        })
+                                    }
                                 }
                             }
 
