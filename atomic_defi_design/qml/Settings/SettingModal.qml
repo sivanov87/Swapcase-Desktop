@@ -180,6 +180,45 @@ Qaterial.Dialog
                                     onCheckedChanged: API.app.settings_pg.notification_enabled = checked
                                 }
                             }
+
+                            RowLayout {
+                                visible: atomic_app_name == "SmartDEX"
+                                width: parent.width-30
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                height: 30
+                                DexLabel {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.fillWidth: true
+                                    text: qsTr("NetID")
+                                }
+                                DefaultCheckBox {
+                                    id: netIdCheckBox
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Component.onCompleted: checked = atomic_settings2.netId
+                                    onCheckedChanged: atomic_settings2.netId = checked
+                                }
+                            }
+
+                            RowLayout {
+                                visible: netIdCheckBox.checked && atomic_app_name == "SmartDEX"
+                                width: parent.width-30
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                height: 30
+                                DexLabel {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.fillWidth: true
+                                    text: qsTr("")
+                                }
+                                DexTextField {
+                                    id: netIdField
+                                    implicitWidth: 150
+                                    implicitHeight: 37
+                                    text: atomic_app_name == "SmartDEX" ? atomic_settings2.value("NetID") : ""
+                                    onTextChanged: atomic_settings2.setValue("NetID")
+                                    Layout.alignment: Qt.AlignVCenter
+                                }
+                            }
+
                             RowLayout {
                                 width: parent.width-30
                                 anchors.horizontalCenter: parent.horizontalCenter

@@ -40,6 +40,7 @@ DexRectangle
     property int current_page
     property bool can_open_login: false
     property bool disconnected: false
+    property bool netID: false
 
     onCurrent_pageChanged: {
         if (window.logged !== undefined) {
@@ -369,6 +370,7 @@ DexRectangle
     Settings {
         id: atomic_settings2
         fileName: atomic_cfg_file
+        property alias netId: app.netID
     }
 
     Settings {
