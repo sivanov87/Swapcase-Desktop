@@ -214,6 +214,9 @@ Qaterial.Dialog
                                     implicitWidth: 150
                                     implicitHeight: 37
                                     field.text: atomic_app_name == "SmartDEX" ? atomic_settings2.value("NetID") : ""
+                                    field.validator: RegExpValidator {
+                                        regExp: /(0|([1-9][0-9]*))(\.[0-9]{1,8})?/
+                                    }
                                     field.onTextChanged: {
                                         if(field.text !== atomic_settings2.value("NetID")) {
                                             saveNetIdButton.visible = true
