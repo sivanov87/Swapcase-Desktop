@@ -675,6 +675,227 @@
     "active": false,
     "currently_enabled": false
   },
+  "CASE-BEP20": {
+    "coin": "CASE-BEP20",
+	"name": "Token CASE",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF1-BEP20": {
+    "coin": "CDF1-BEP20",
+	"name": "CASE Decentralized Fund 1",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF2-BEP20": {
+    "coin": "CDF2-BEP20",
+	"name": "CASE Decentralized Fund 2",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF3-BEP20": {
+    "coin": "CDF3-BEP20",
+	"name": "CASE Decentralized Fund 3",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF4-BEP20": {
+    "coin": "CDF4-BEP20",
+	"name": "CASE Decentralized Fund 4",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF5-BEP20": {
+    "coin": "CDF5-BEP20",
+	"name": "CASE Decentralized Fund 5",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF6-BEP20": {
+    "coin": "CDF6-BEP20",
+	"name": "CASE Decentralized Fund 6",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF7-BEP20": {
+    "coin": "CDF7-BEP20",
+	"name": "CASE Decentralized Fund 7",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF8-BEP20": {
+    "coin": "CDF8-BEP20",
+	"name": "CASE Decentralized Fund 8",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF9-BEP20": {
+    "coin": "CDF9-BEP20",
+	"name": "CASE Decentralized Fund 9",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF10-BEP20": {
+    "coin": "CDF10-BEP20",
+	"name": "CASE Decentralized Fund 10",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF11-BEP20": {
+    "coin": "CDF11-BEP20",
+	"name": "CASE Decentralized Fund 11",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
+  "CDF12-BEP20": {
+    "coin": "CDF12-BEP20",
+	"name": "CASE Decentralized Fund 12",
+    "coinpaprika_id": "test-coin",
+	"coingecko_id": "test-coin",
+    "explorer_url": [
+        "https://bscscan.com/"
+    ],
+    "nodes": [
+		"http://bsc1.cipig.net:8655",
+        "http://bsc2.cipig.net:8655",
+        "http://bsc3.cipig.net:8655"
+    ],
+    "type": "BEP-20",
+    "active": true,
+    "currently_enabled": false
+  },
   "CDN": {
     "coin": "CDN",
     "name": "Canada eCoin",

@@ -12,4 +12,5 @@ QtObject {
     readonly property string app_twitter_url: atomic_app_twitter_url
     readonly property var    qt_utilities: atomic_qt_utilities
     readonly property string current_version: dex_current_version
+    readonly property string app_ecosystem_url: swapcase_app_ecosystem_url
 }

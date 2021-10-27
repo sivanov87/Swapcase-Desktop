@@ -527,7 +527,7 @@ Qaterial.Dialog {
         width: parent.width
         height: 50
         anchors.bottom: parent.bottom
-        DexSelectableButton {
+        /*DexSelectableButton {
             selected: true
             anchors.right: logout_button.left
             anchors.rightMargin: 10
@@ -552,7 +552,7 @@ Qaterial.Dialog {
                 opacity: .6
             }
             onClicked: new_update_modal.open()
-        }
+        }*/
 
         DexSelectableButton {
             id: logout_button

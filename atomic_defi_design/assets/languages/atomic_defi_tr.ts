@@ -2850,11 +2850,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Settings/SettingModal.qml" line="548"/>
-        <source>Search Update</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../qml/Settings/SettingModal.qml" line="576"/>
         <source>Logout</source>
         <translation type="unfinished"></translation>
@@ -2967,8 +2962,8 @@
         <translation type="unfinished">Ayarlar</translation>
     </message>
     <message>
-        <location filename="../../qml/Sidebar/SidebarBottom.qml" line="22"/>
-        <source>Support</source>
+        <location filename="../../qml/Sidebar/SidebarBottom.qml" line="21"/>
+        <source>Ecosystem</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

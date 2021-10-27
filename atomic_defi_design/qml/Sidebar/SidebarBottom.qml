@@ -17,10 +17,10 @@ ColumnLayout {
         onCheckedChanged: setting_modal.open()
     }
 
-    SidebarLine {
-        dashboard_index: idx_dashboard_support
-        text_value: sidebar.expanded? qsTr("Support") : ""
+    SidebarLineLink {
+        text_value: sidebar.expanded? qsTr("Ecosystem") : ""
         image: General.image_path + "menu-support-white.png"
+        link: API.app_ecosystem_url
         Layout.fillWidth: true
         separator: false
     }

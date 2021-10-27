@@ -2859,11 +2859,6 @@
         <translation>Version de Qt</translation>
     </message>
     <message>
-        <location filename="../../qml/Settings/SettingModal.qml" line="548"/>
-        <source>Search Update</source>
-        <translation>Rechercher une mise à jour</translation>
-    </message>
-    <message>
         <location filename="../../qml/Settings/SettingModal.qml" line="576"/>
         <source>Logout</source>
         <translation>Se déconnecter</translation>
@@ -2976,9 +2971,9 @@
         <translation>Réglages</translation>
     </message>
     <message>
-        <location filename="../../qml/Sidebar/SidebarBottom.qml" line="22"/>
-        <source>Support</source>
-        <translation>Support</translation>
+        <location filename="../../qml/Sidebar/SidebarBottom.qml" line="21"/>
+        <source>Ecosystem</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../qml/Sidebar/SidebarBottom.qml" line="30"/>

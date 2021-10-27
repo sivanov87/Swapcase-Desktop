@@ -20,6 +20,8 @@ else ()
 endif ()
 message(STATUS "APPDATA folder is ${DEX_APPDATA_FOLDER}")
 
+set(SWAPCASE_ECOSYSTEM_URL "https://swapcase.io/")
+
 if (UNIX AND NOT APPLE)
     set(DEX_LINUX_APP_ID "swapcase.desktop")
 endif ()
